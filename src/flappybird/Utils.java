@@ -1,0 +1,29 @@
+package flappybird;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.geom.AffineTransform;
+
+public class Utils {
+    Utils() {}
+
+    public static BufferedImage flipVertical(BufferedImage original) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        AffineTransform transform = AffineTransform.getScaleInstance(1, -1);
+        transform.translate(0, -height);
+        Graphics2D g = flipped.createGraphics();
+
+        g.drawImage(original, transform, null);
+        g.dispose();
+
+        return flipped;
+    }
+
+    public static void tilt(BufferedImage image, float degree) {
+
+    }
+}
