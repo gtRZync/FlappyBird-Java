@@ -40,6 +40,12 @@ FlappyBirdGame/
 
 ---
 
+| Game Start                                 | Gameplay                               |
+|--------------------------------------------|----------------------------------------|
+| ![Start Screen](res/screenshots/start.png) | ![Game Over](res/screenshots/play.png) |
+- [ ] Game Over Screen
+
+---
 ## How to Run
 
 ### Using IntelliJ IDEA
@@ -61,6 +67,8 @@ FlappyBirdGame/
     ```
 
 ---
+
+
 
 ## Controls
 
