@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
     // === Player & Input ===
     private final Bird bird;
-    private final InputManager input;
+    private final InputManager inputManager;
     private boolean mouseJumped = false;
     private boolean keyJumped = false;
 
@@ -51,7 +51,7 @@ public class GamePanel extends JPanel implements ActionListener{
         pipes = new ArrayList<>();
         floorX2 = width;
         setFocusable(true);
-        input = new InputManager(this);
+        inputManager = new InputManager(this);
         Timer game = new Timer(GameConstants.DELAY, this);
         game.start();
     }
@@ -218,30 +218,30 @@ public class GamePanel extends JPanel implements ActionListener{
     }
 
     private void processInput() {
-        if(input.keyBoard.key(Key.ESCAPE).pressed && Utils.notPlaying(gameState)) {
+        if(inputManager.keyBoard.isPressed(Key.ESCAPE) && Utils.notPlaying(gameState)) {
             gameState = GameState.MENU;
             resetGame();
         }
-        if(input.keyBoard.key(Key.F3).pressed) {
+        if(inputManager.keyBoard.isPressed(Key.F3)) {
             debug = !debug;
         }
 
 
-        if(input.mouse.LEFT_BUTTON.pressed && !mouseJumped)
+        if(inputManager.mouse.LEFT_BUTTON.pressed && !mouseJumped)
         {
             mouseJumped = true;
             startGame();
         }
-        if(input.mouse.LEFT_BUTTON.released) {
+        if(inputManager.mouse.LEFT_BUTTON.released) {
             mouseJumped = false;
         }
 
 
-        if(input.keyBoard.key(Key.SPACE).pressed && !keyJumped) {
+        if(inputManager.keyBoard.isPressed(Key.SPACE) && !keyJumped) {
             keyJumped = true;
             startGame();
         }
-        if(input.keyBoard.key(Key.SPACE).released) {
+        if(inputManager.keyBoard.isReleased(Key.SPACE)) {
             keyJumped = false;
         }
     }
@@ -287,6 +287,6 @@ public class GamePanel extends JPanel implements ActionListener{
             setScore();
         }
         repaint();
-        input.resetInputStateAfter();
+        inputManager.resetInputStateAfter();
     }
 }
