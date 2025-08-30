@@ -36,18 +36,6 @@ public class Bird
         this.position.y += y;
         bounds.setPosition(position);
     }
-    public void move(vector2<Float> newPos)
-    {
-        this.position.x += newPos.x;
-        this.position.y += newPos.y;
-        bounds.setPosition(position);
-    }
-
-    public void setPosition(vector2<Float> newPos)
-    {
-        this.position = newPos;
-        bounds.setPosition(position);
-    }
 
     public void setPosition(float x, float y)
     {

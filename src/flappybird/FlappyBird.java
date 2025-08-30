@@ -26,7 +26,6 @@ public class FlappyBird {
                 Audio.POINT.close();
 
                 frame.dispose();
-                System.exit(0);
             }
         });
         frame.setVisible(true);

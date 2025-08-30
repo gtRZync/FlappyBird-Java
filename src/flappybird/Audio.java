@@ -14,7 +14,7 @@ public enum Audio {
     POINT("/assets/audio/point.wav"),
     HIT("/assets/audio/hit.wav");
 
-    private Audio(String filename) {
+    Audio(String filename) {
         try
         {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(Audio.class.getResource(filename)));
@@ -32,11 +32,12 @@ public enum Audio {
     private final Clip audio;
 
     public void play() {
+        audio.setFramePosition(0);
         audio.start();
-        audio.setMicrosecondPosition(0);
     }
     public void close() {
         if(audio != null && audio.isOpen()) {
+            audio.stop();
             audio.close();
         }
     }

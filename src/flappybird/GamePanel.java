@@ -1,16 +1,22 @@
 package flappybird;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Color;
+
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
+
 import java.util.ArrayList;
 import java.util.Random;
 import utils.*;
 
-public class GamePanel extends JPanel implements ActionListener, KeyListener {
+public class GamePanel extends JPanel implements ActionListener{
     // === Pipes & Spawning ===
     private final ArrayList<Pipe> pipes;
     private boolean shouldSpawn = false;
@@ -27,7 +33,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     // === Player & Input ===
     private final Bird bird;
-    private boolean jumped = false;
+    private final InputManager input;
+    private boolean mouseJumped = false;
+    private boolean keyJumped = false;
 
     // === Game State ===
     private GameState gameState = GameState.MENU;
@@ -43,7 +51,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         pipes = new ArrayList<>();
         floorX2 = width;
         setFocusable(true);
-        addKeyListener(this);
+        input = new InputManager(this);
         Timer game = new Timer(GameConstants.DELAY, this);
         game.start();
     }
@@ -89,13 +97,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private void applyGravity()
     {
-        if(jumped) {
+        if(keyJumped || mouseJumped) {
+            Audio.SWOOSH.play();
             bird.velocityY = GameConstants.JUMP_VELOCITY;
         }else {
             bird.velocityY += GameConstants.GRAVITY;
         }
         bird.velocityY = Math.min(bird.velocityY, GameConstants.TERMINAL_VELOCITY);
-        bird.move(new vector2<>(0.f, bird.velocityY));
+        bird.move(0.f, bird.velocityY);
     }
 
     private void setShouldSpawn()
@@ -174,7 +183,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     }
 
     private void resetGame() {
-        this.bird.setPosition(new vector2<>(bird.getPosition().x, 250.f));
+        this.bird.setPosition(bird.getPosition().x, 250.f);
         pipes.clear();
         this.score = 0;
         spawningStarted = false;
@@ -208,9 +217,39 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         drawFloor(g2);
     }
 
+    private void processInput() {
+        if(input.keyBoard.key(Key.ESCAPE).pressed && Utils.notPlaying(gameState)) {
+            gameState = GameState.MENU;
+            resetGame();
+        }
+        if(input.keyBoard.key(Key.F3).pressed) {
+            debug = !debug;
+        }
+
+
+        if(input.mouse.LEFT_BUTTON.pressed && !mouseJumped)
+        {
+            mouseJumped = true;
+            startGame();
+        }
+        if(input.mouse.LEFT_BUTTON.released) {
+            mouseJumped = false;
+        }
+
+
+        if(input.keyBoard.key(Key.SPACE).pressed && !keyJumped) {
+            keyJumped = true;
+            startGame();
+        }
+        if(input.keyBoard.key(Key.SPACE).released) {
+            keyJumped = false;
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        processInput();
         calculateFPS();
         if(!gameState.equals(GameState.GAME_OVER) && !gameState.equals(GameState.MENU)) {
             applyParallax();
@@ -222,12 +261,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             applyGravity();
             if(bird.getPosition().y > getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT))
             {
-                bird.setPosition(new vector2<>(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT))));                bird.velocityY = Math.max(0.f, bird.velocityY);
+                bird.setPosition(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT)));                bird.velocityY = Math.max(0.f, bird.velocityY);
                 bird.velocityY = Math.max(0.f, bird.velocityY);
             }
             else if(bird.getPosition().y <=  GameConstants.MAX_HEIGHT)
             {
-                bird.setPosition(new vector2<>(bird.getPosition().x, GameConstants.MAX_HEIGHT));
+                bird.setPosition(bird.getPosition().x, GameConstants.MAX_HEIGHT);
                 bird.velocityY = Math.max(0.f, bird.velocityY);
             }
             for (Pipe p : pipes) {
@@ -248,33 +287,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             setScore();
         }
         repaint();
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_SPACE && !jumped)
-        {
-            jumped = true;
-            startGame();
-            if(gameState.equals(GameState.PLAYING))
-                Audio.SWOOSH.play();
-        }
-        if(e.getKeyCode() == KeyEvent.VK_F3) {
-            debug = !debug;
-        }
-        if(!gameState.equals(GameState.PLAYING) && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            gameState = GameState.MENU;
-            resetGame();
-        }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_SPACE)
-        {
-            jumped = false;
-        }
+        input.resetInputStateAfter();
     }
 }

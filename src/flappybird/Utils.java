@@ -1,5 +1,7 @@
 package flappybird;
 
+import utils.GameState;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
@@ -25,5 +27,9 @@ public class Utils {
 
     public static void tilt(BufferedImage image, float degree) {
 
+    }
+
+    public static boolean notPlaying(GameState state) {
+        return !state.equals(GameState.MENU) && !state.equals(GameState.PLAYING);
     }
 }
