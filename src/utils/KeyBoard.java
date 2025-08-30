@@ -14,7 +14,7 @@ public class KeyBoard extends KeyAdapter implements ResetState {
         ctx.addKeyListener(this);
         keyStates = new HashMap<>();
         for(Key key : Key.values()) {
-            keyStates.put(key, new Button(key));
+            keyStates.put(key, new Button());
         }
     }
 
