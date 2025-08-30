@@ -15,31 +15,6 @@ This project demonstrates basic game programming concepts such as animation, col
 
 ---
 
-## Project Structure
-
-```markdown
-FlappyBirdGame/
-├── src/
-│   ├── flappybird/
-│   │   ├── FlappyBird.java        
-│   │   ├── GamePanel.java         
-│   │   ├── Bird.java              
-│   │   ├── Pipe.java              
-│   │   ├── GameConstants.java     
-│   │   └── Utils.java             
-│   └── utils/
-│       ├── vector2.java         
-│       └── Rect.java             
-├── assets/
-│   ├── bird.png                  
-│   ├── pipe.png                
-│   └── background.png            
-├── out/                          
-└── README.md
-````
-
----
-
 | Game Start                                 | Gameplay                               |
 |--------------------------------------------|----------------------------------------|
 | ![Start Screen](res/screenshots/start.png) | ![Game Over](res/screenshots/play.png) |
