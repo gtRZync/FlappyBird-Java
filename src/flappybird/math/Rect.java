@@ -1,4 +1,4 @@
-package utils;
+package flappybird.math;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -25,7 +25,7 @@ public class Rect<T extends Number> {
         this.width = width;
         this.height = height;
     }
-    Rect(vector2<T> position, vector2<T> size) {
+    Rect(Vector2<T> position, Vector2<T> size) {
         this(position.x, position.y, size.x, size.y);
     }
     public void draw(Graphics2D g) {
@@ -38,7 +38,7 @@ public class Rect<T extends Number> {
         g.drawLine(left.intValue(), top.intValue() + height.intValue(),  left.intValue() + width.intValue(), top.intValue() + height.intValue());
         g.setStroke(stroke);
     }
-    public void setPosition(vector2<T> newPos) {
+    public void setPosition(Vector2<T> newPos) {
         this.left = newPos.x;
         this.top = newPos.y;
     }

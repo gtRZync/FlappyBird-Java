@@ -1,4 +1,4 @@
-package utils;
+package flappybird.core;
 
 public enum GameState {
     MENU,

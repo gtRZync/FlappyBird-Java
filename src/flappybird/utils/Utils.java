@@ -1,14 +1,12 @@
-package flappybird;
+package flappybird.utils;
 
-import utils.GameState;
+import flappybird.core.GameState;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 
 public class Utils {
-    Utils() {}
-
     public static BufferedImage flipVertical(BufferedImage original) {
         int width = original.getWidth();
         int height = original.getHeight();
@@ -23,10 +21,6 @@ public class Utils {
         g.dispose();
 
         return flipped;
-    }
-
-    public static void tilt(BufferedImage image, float degree) {
-
     }
 
     public static boolean notPlaying(GameState state) {

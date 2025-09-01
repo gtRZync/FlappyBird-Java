@@ -1,4 +1,4 @@
-package flappybird;
+package flappybird.core;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,7 +22,7 @@ public class GameConstants {
 
     public static BufferedImage BACKGROUND;
     public static BufferedImage FLOOR;
-    public static BufferedImage BIRD;
+    public static BufferedImage[] BIRD = new BufferedImage[3];
     public static BufferedImage PIPE;
     public static BufferedImage MESSAGE;
 
@@ -34,7 +34,9 @@ public class GameConstants {
             MESSAGE = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/message.png")));
             BACKGROUND = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/background-day.png")));
             PIPE = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/pipe2.png")));
-            BIRD = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/yellowbird-midflap.png")));
+            BIRD[0] = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/yellowbird-upflap.png")));
+            BIRD[1] = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/yellowbird-midflap.png")));
+            BIRD[2] = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/yellowbird-downflap.png")));
             FLOOR = ImageIO.read(Objects.requireNonNull(GameConstants.class.getResource("/assets/sprites/base.png")));
         }catch(IOException e) {
             throw new RuntimeException("Failed to load game assets", e);

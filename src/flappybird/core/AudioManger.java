@@ -1,4 +1,4 @@
-package flappybird;
+package flappybird.core;
 
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
@@ -8,16 +8,16 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.util.Objects;
 
-public enum Audio {
+public enum AudioManger {
     DIE("/assets/audio/die.wav"),
     SWOOSH("/assets/audio/swoosh.wav"),
     POINT("/assets/audio/point.wav"),
     HIT("/assets/audio/hit.wav");
 
-    Audio(String filename) {
+    AudioManger(String filename) {
         try
         {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(Audio.class.getResource(filename)));
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(AudioManger.class.getResource(filename)));
             audio = AudioSystem.getClip();
             audio.open(audioStream);
             audioStream.close();

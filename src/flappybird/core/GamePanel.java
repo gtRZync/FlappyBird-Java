@@ -1,4 +1,4 @@
-package flappybird;
+package flappybird.core;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -14,7 +14,11 @@ import java.awt.event.ActionListener;
 
 import java.util.ArrayList;
 import java.util.Random;
-import utils.*;
+
+import flappybird.input.Key;
+import flappybird.utils.Utils;
+import flappybird.entities.*;
+import flappybird.input.InputManager;
 
 public class GamePanel extends JPanel implements ActionListener{
     // === Pipes & Spawning ===
@@ -24,6 +28,7 @@ public class GamePanel extends JPanel implements ActionListener{
     private final Random rand = new Random();
 
     // === Timing & FPS ===
+    private float deltaTime = 0.f;
     private long lastTime = System.nanoTime();
     private float fpsTimer = 0;
     private int fpsCounter = 0;
@@ -47,7 +52,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
     GamePanel(int width, int height) {
         this.setPreferredSize(new Dimension(width, height));
-        this.bird = new Bird(100.f, 250.f, 50, 50, GameConstants.BIRD, this);
+        this.bird = new Bird(100.f, 250.f, this);
         pipes = new ArrayList<>();
         floorX2 = width;
         setFocusable(true);
@@ -81,11 +86,12 @@ public class GamePanel extends JPanel implements ActionListener{
         if(!pipes.getFirst().isScored() && pipes.getFirst().getCx() < bird.getPosition().x) {
             score += 1;
             pipes.getFirst().setScored(true);
-            Audio.POINT.play();
+            AudioManger.POINT.play();
         }
     }
 
     private void applyParallax() {
+        if(gameState.equals(GameState.GAME_OVER) || gameState.equals(GameState.MENU)) return;
         int FG_X_SPEED = -3;
         floorX += FG_X_SPEED;
         floorX2 += FG_X_SPEED;
@@ -98,7 +104,7 @@ public class GamePanel extends JPanel implements ActionListener{
     private void applyGravity()
     {
         if(keyJumped || mouseJumped) {
-            Audio.SWOOSH.play();
+            AudioManger.SWOOSH.play();
             bird.velocityY = GameConstants.JUMP_VELOCITY;
         }else {
             bird.velocityY += GameConstants.GRAVITY;
@@ -146,7 +152,7 @@ public class GamePanel extends JPanel implements ActionListener{
     private void calculateFPS()
     {
         long currentTime = System.nanoTime();
-        float deltaTime = (currentTime - lastTime) / 1_000_000_000f;
+        deltaTime = (currentTime - lastTime) / 1e9f;
         lastTime = currentTime;
 
         fpsCounter++;
@@ -154,8 +160,9 @@ public class GamePanel extends JPanel implements ActionListener{
 
         if (fpsTimer >= 1.0f) {
             FPS = fpsCounter / fpsTimer;
-            fpsCounter = 0;
-            fpsTimer = 0;
+            fpsCounter -= (int)FPS;
+            fpsTimer -= 1.f;
+            System.out.println("FPS : " + FPS);
         }
     }
 
@@ -174,7 +181,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
     private void startPipeSpawning() {
         long currentTime = System.nanoTime();
-        float spawnTime = (currentTime - lastPipeTimer) / 1_000_000_000f;
+        float spawnTime = (currentTime - lastPipeTimer) / 1e9f;
         final float START_PIPE_SPAWNING = 3.f;
 
         if(spawnTime >= START_PIPE_SPAWNING) {
@@ -197,11 +204,11 @@ public class GamePanel extends JPanel implements ActionListener{
         if(!gameState.equals(GameState.MENU))
         {
             if (debug)
-                bird.bounds.draw(g2);
+                bird.drawBounds(g2);
             for (Pipe p : pipes) {
                 p.spawn(g2);
                 if (debug) {
-                    p.bounds.draw(g2);
+                    p.drawBounds(g2);
                 }
             }
             bird.drawSprite(g2);
@@ -251,30 +258,30 @@ public class GamePanel extends JPanel implements ActionListener{
     {
         processInput();
         calculateFPS();
-        if(!gameState.equals(GameState.GAME_OVER) && !gameState.equals(GameState.MENU)) {
-            applyParallax();
-        }
+        applyParallax();
+        bird.animate(deltaTime);
+        bird.idleBob(gameState, deltaTime);
 
         if(gameState == GameState.PLAYING)
         {
             startPipeSpawning();
             applyGravity();
-            if(bird.getPosition().y > getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT))
+            if(bird.isGrounded)
             {
-                bird.setPosition(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT)));                bird.velocityY = Math.max(0.f, bird.velocityY);
+                bird.setPosition(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT)));
                 bird.velocityY = Math.max(0.f, bird.velocityY);
             }
-            else if(bird.getPosition().y <=  GameConstants.MAX_HEIGHT)
+            else if(bird.isBelowCeiling)
             {
                 bird.setPosition(bird.getPosition().x, GameConstants.MAX_HEIGHT);
                 bird.velocityY = Math.max(0.f, bird.velocityY);
             }
             for (Pipe p : pipes) {
                 p.move(GameConstants.X_SPEED, 0.f);
-                if(bird.isCollidedWith(p.bounds)) {
-                    Audio.HIT.play();
+                if(bird.isCollidedWith(p.getBounds())) {
+                    AudioManger.HIT.play();
                     gameState = GameState.GAME_OVER;
-                    Audio.DIE.play();
+                    AudioManger.DIE.play();
                 }
             }
             pipes.removeIf(p -> p.getCx() < - Pipe.WIDTH);
@@ -287,6 +294,6 @@ public class GamePanel extends JPanel implements ActionListener{
             setScore();
         }
         repaint();
-        inputManager.resetInputStateAfter();
+        inputManager.resetInputStatesAfter();
     }
 }

@@ -1,4 +1,4 @@
-package utils;
+package flappybird.input;
 
 public class Button {
     public boolean held = false;

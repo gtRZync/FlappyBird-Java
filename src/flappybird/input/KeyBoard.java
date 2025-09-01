@@ -1,4 +1,4 @@
-package utils;
+package flappybird.input;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -7,10 +7,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class KeyBoard extends KeyAdapter implements ResetState {
-    private Map<Key, Button> keyStates;
+    private final Map<Key, Button> keyStates;
 
     public KeyBoard(Component ctx) {
-        if (ctx == null) return;
+        if (ctx == null) {
+            throw new IllegalArgumentException("Component context ('ctx') cannot be null when creating a KeyBoard instance.");
+        }
         ctx.addKeyListener(this);
         keyStates = new HashMap<>();
         for(Key key : Key.values()) {
@@ -61,7 +63,7 @@ public class KeyBoard extends KeyAdapter implements ResetState {
     }
 
     @Override
-    public void resetInputStateAfter() {
+    public void resetInputStatesAfter() {
         for(Key key : Key.values()) {
             keyStates.get(key).released = false;
             keyStates.get(key).pressed = false;

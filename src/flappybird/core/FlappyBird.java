@@ -1,4 +1,4 @@
-package flappybird;
+package flappybird.core;
 
 import javax.swing.JFrame;
 import javax.swing.ImageIcon;
@@ -20,10 +20,10 @@ public class FlappyBird {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                Audio.SWOOSH.close();
-                Audio.DIE.close();
-                Audio.HIT.close();
-                Audio.POINT.close();
+                AudioManger.SWOOSH.close();
+                AudioManger.DIE.close();
+                AudioManger.HIT.close();
+                AudioManger.POINT.close();
 
                 frame.dispose();
             }

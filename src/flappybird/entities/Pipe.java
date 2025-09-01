@@ -1,16 +1,18 @@
-package flappybird;
+package flappybird.entities;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import utils.vector2;
-import utils.Rect;
+
+import flappybird.utils.Utils;
+import flappybird.math.Vector2;
+import flappybird.math.Rect;
 
 
 public class Pipe {
-    private final vector2<Float> position;
+    private final Vector2<Float> position;
     private final ImageObserver observer;
-    public Rect<Float> bounds; //! Make private
+    private final Rect<Float> bounds;
     private final BufferedImage sprite;
     private final BufferedImage vSprite;
     public static final int WIDTH = 100;
@@ -25,7 +27,10 @@ public class Pipe {
 
     public Pipe(float cx, float cy, int height, BufferedImage sprite, ImageObserver observer)
     {
-        position = new vector2<>(cx, cy);
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null.");
+        }
+        position = new Vector2<>(cx, cy);
         this.height = height;
         this.isBottom = this.position.y > 0;
         this.sprite = sprite;
@@ -58,5 +63,12 @@ public class Pipe {
         {
             g2.drawImage(sprite, position.x.intValue(), position.y.intValue() - height, WIDTH, height, observer);
         }
+    }
+    public void drawBounds(Graphics2D g2) {
+        bounds.draw(g2);
+    }
+
+    public Rect<Float> getBounds() {
+        return this.bounds;
     }
 }

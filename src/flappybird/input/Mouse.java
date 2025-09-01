@@ -1,15 +1,17 @@
-package utils;
+package flappybird.input;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Mouse extends MouseAdapter implements ResetState {
-    public Button LEFT_BUTTON;
-    public Button RIGHT_BUTTON;
+    public final Button LEFT_BUTTON;
+    public final Button RIGHT_BUTTON;
 
     public Mouse(Component ctx) {
-        if(ctx == null) return;
+        if (ctx == null) {
+            throw new IllegalArgumentException("Component context ('ctx') cannot be null when creating a Mouse instance.");
+        }
         ctx.addMouseListener(this);
         this.LEFT_BUTTON = new Button();
         this.RIGHT_BUTTON = new Button();
@@ -32,7 +34,7 @@ public class Mouse extends MouseAdapter implements ResetState {
     }
 
     @Override
-    public void resetInputStateAfter() {
+    public void resetInputStatesAfter() {
         LEFT_BUTTON.pressed = false;
         LEFT_BUTTON.released = false;
         RIGHT_BUTTON.pressed = false;
