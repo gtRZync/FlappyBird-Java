@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
     GamePanel(int width, int height) {
         this.setPreferredSize(new Dimension(width, height));
-        this.bird = new Bird(100.f, 250.f, this);
+        this.bird = new Bird( this);
         pipes = new ArrayList<>();
         floorX2 = width;
         setFocusable(true);
@@ -101,15 +101,16 @@ public class GamePanel extends JPanel implements ActionListener{
         }
     }
 
-    private void applyGravity()
+    private void updateVerticalMotion()
     {
         if(keyJumped || mouseJumped) {
             AudioManger.SWOOSH.play();
-            bird.velocityY = GameConstants.JUMP_VELOCITY;
+            bird.velocityY = Bird.JUMP_VELOCITY;
+            bird.startHeadUpTimer(true);
         }else {
             bird.velocityY += GameConstants.GRAVITY;
         }
-        bird.velocityY = Math.min(bird.velocityY, GameConstants.TERMINAL_VELOCITY);
+        bird.velocityY = Math.min(bird.velocityY, Bird.TERMINAL_VELOCITY);
         bird.move(0.f, bird.velocityY);
     }
 
@@ -162,7 +163,6 @@ public class GamePanel extends JPanel implements ActionListener{
             FPS = fpsCounter / fpsTimer;
             fpsCounter -= (int)FPS;
             fpsTimer -= 1.f;
-            System.out.println("FPS : " + FPS);
         }
     }
 
@@ -190,7 +190,7 @@ public class GamePanel extends JPanel implements ActionListener{
     }
 
     private void resetGame() {
-        this.bird.setPosition(bird.getPosition().x, 250.f);
+        bird.reset();
         pipes.clear();
         this.score = 0;
         spawningStarted = false;
@@ -259,13 +259,12 @@ public class GamePanel extends JPanel implements ActionListener{
         processInput();
         calculateFPS();
         applyParallax();
-        bird.animate(deltaTime);
-        bird.idleBob(gameState, deltaTime);
+        bird.updateAnimation(gameState, deltaTime);
 
         if(gameState == GameState.PLAYING)
         {
             startPipeSpawning();
-            applyGravity();
+            updateVerticalMotion();
             if(bird.isGrounded)
             {
                 bird.setPosition(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT)));

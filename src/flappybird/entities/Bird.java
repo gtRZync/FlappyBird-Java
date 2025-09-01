@@ -11,9 +11,14 @@ import flappybird.math.Rect;
 
 public class Bird
 {
+    public static final float STARTING_Y = 250.f;
+    public static final float DEFAULT_X = 100.f;
+    public static final float JUMP_VELOCITY = -8;
+    public static final float TERMINAL_VELOCITY = 10;
     private Vector2<Float> position;
     private final Vector2<Integer> size;
     private final Rect<Float> bounds;
+    private double tiltAngle  = 0;
 
     private final ImageObserver observer;
 
@@ -29,14 +34,22 @@ public class Bird
     private static final float frameDuration = 1.f / ANIMATION_FPS;
     private int currentFrame = 0;
 
-    public Bird(float x, float y, ImageObserver observer) {
+    private static final double MAX_UPWARD_ANGLE = Math.toRadians(-30); // Tilt up when jumping
+    private static final double MAX_DOWNWARD_ANGLE = Math.toRadians(90); // Terminal down tilt
+    private static final double TILT_SPEED = Math.toRadians(360); //? How fast it tilts down per second
+
+    private float headUpTimer = 0.f;
+    private boolean startHeadUpTimer;
+
+
+    public Bird(ImageObserver observer) {
         if (observer == null) {
             throw new IllegalArgumentException("Observer cannot be null.");
         }
-        this.position = new Vector2<>(x, y);
+        this.position = new Vector2<>(DEFAULT_X, STARTING_Y);
         this.size = new Vector2<>((int)(GameConstants.BIRD[0].getWidth() * 1.8), (int)(GameConstants.BIRD[0].getHeight() * 1.7));
         this.observer = observer;
-        bounds = new Rect<>(x, y,(float)size.x,(float)size.y);
+        bounds = new Rect<>(DEFAULT_X, STARTING_Y,(float)size.x,(float)size.y);
     }
 
     public Vector2<Float> getPosition() { return this.position; }
@@ -58,7 +71,11 @@ public class Bird
     }
 
     public void drawSprite(Graphics2D g2) {
-        g2.drawImage(
+        Graphics2D g = (Graphics2D) g2.create();
+        double width = position.x + size.x /  2.f;
+        double height = position.y + size.y /  2.f;
+        g.rotate(tiltAngle, width, height);
+        g.drawImage(
                 getCurrentFrame(),
                 this.position.x.intValue(),
                 this.position.y.intValue(),
@@ -66,14 +83,13 @@ public class Bird
                 size.y,
                 observer
         );
+        g.dispose();
     }
     public void drawBounds(Graphics2D g2) {
         bounds.draw(g2);
     }
 
-    public void idleBob(GameState state, float deltaTime) {
-        if(!state.equals(GameState.START)) return;
-
+    private void idleBob(float deltaTime) {
         final float amplitude = 2.f;
         final float speed = 8.f;
         idleTimer += deltaTime;
@@ -83,12 +99,61 @@ public class Bird
         move(0.f, offsetY);
     }
 
-    public void animate( float deltaTime) {
+    private void animate( float deltaTime) {
         this.animationTimer += deltaTime;
 
         if(animationTimer >= frameDuration) {
             currentFrame = (currentFrame + 1) % GameConstants.BIRD.length;
             animationTimer -= frameDuration;
+        }
+    }
+
+    public void startHeadUpTimer(boolean state) {
+        headUpTimer = 0.f;
+        this.startHeadUpTimer = state;
+    }
+
+    public void reset() {
+        startHeadUpTimer = false;
+        headUpTimer = 0.f;
+        tiltAngle = 0;
+        setPosition(DEFAULT_X, STARTING_Y);
+    }
+
+    private boolean shouldKeepHeadUp(float deltaTime) {
+        boolean keepHeadUp = false;
+        final float KEEP_HEAD_UP_THRESHOLD = .6f;
+        if(startHeadUpTimer) {
+            headUpTimer += deltaTime;
+            if(headUpTimer <= KEEP_HEAD_UP_THRESHOLD) {
+                keepHeadUp = true;
+            } else {
+                headUpTimer -= KEEP_HEAD_UP_THRESHOLD;
+                startHeadUpTimer = false;
+            }
+        }
+        return keepHeadUp;
+    }
+
+    private void tilt(float deltaTime) {
+        if(shouldKeepHeadUp(deltaTime)) {
+            tiltAngle = MAX_UPWARD_ANGLE;
+        } else {
+            tiltAngle += TILT_SPEED * deltaTime;
+            if(tiltAngle > MAX_DOWNWARD_ANGLE) {
+                tiltAngle = MAX_DOWNWARD_ANGLE;
+            }
+        }
+    }
+    public void updateAnimation(GameState gamestate, float deltaTime) {
+        if(gamestate == GameState.MENU) return;
+
+        animate(deltaTime);
+
+        if(gamestate == GameState.START) {
+            idleBob(deltaTime);
+        }else if(gamestate == GameState.PLAYING) {
+            tilt(deltaTime);
         }
     }
 

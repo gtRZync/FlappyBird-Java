@@ -14,8 +14,6 @@ public class GameConstants {
 
     public static final int FLOOR_HEIGHT = 80;
     public static final float GRAVITY = .5f;
-    public static final float JUMP_VELOCITY = -8;
-    public static final float TERMINAL_VELOCITY = 10;
     public static final float X_SPEED = -2.f;
     public static final int SPACE_BETWEEN_PIPES = 180;
     public static final float MAX_HEIGHT = -100.f;
