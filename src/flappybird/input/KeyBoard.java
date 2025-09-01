@@ -7,7 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class KeyBoard extends KeyAdapter implements ResetState {
-    private final Map<Key, Button> keyStates;
+    private final Map<Key, ButtonState> keyStates;
 
     public KeyBoard(Component ctx) {
         if (ctx == null) {
@@ -16,7 +16,7 @@ public class KeyBoard extends KeyAdapter implements ResetState {
         ctx.addKeyListener(this);
         keyStates = new HashMap<>();
         for(Key key : Key.values()) {
-            keyStates.put(key, new Button());
+            keyStates.put(key, new ButtonState());
         }
     }
 
@@ -28,7 +28,7 @@ public class KeyBoard extends KeyAdapter implements ResetState {
      * such as {@code heldDuration()}, {@code wasReleasedRecently(int duration)}, etc.
      */
     @Deprecated
-    public Button key(Key key) {
+    public ButtonState key(Key key) {
         return keyStates.get(key);
     }
 

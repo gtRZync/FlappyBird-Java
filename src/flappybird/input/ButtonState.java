@@ -1,10 +1,10 @@
 package flappybird.input;
 
-public class Button {
+public class ButtonState {
     public boolean held = false;
     public boolean pressed = false;
     public boolean released = false;
 
-    public Button() {
+    public ButtonState() {
     }
 }

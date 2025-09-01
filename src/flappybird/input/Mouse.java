@@ -5,16 +5,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Mouse extends MouseAdapter implements ResetState {
-    public final Button LEFT_BUTTON;
-    public final Button RIGHT_BUTTON;
+    public final ButtonState LEFT_BUTTON;
+    public final ButtonState RIGHT_BUTTON;
 
     public Mouse(Component ctx) {
         if (ctx == null) {
             throw new IllegalArgumentException("Component context ('ctx') cannot be null when creating a Mouse instance.");
         }
         ctx.addMouseListener(this);
-        this.LEFT_BUTTON = new Button();
-        this.RIGHT_BUTTON = new Button();
+        this.LEFT_BUTTON = new ButtonState();
+        this.RIGHT_BUTTON = new ButtonState();
     }
 
     @Override
