@@ -29,15 +29,23 @@ public class Rect<T extends Number> {
         this(position.x, position.y, size.x, size.y);
     }
     public void draw(Graphics2D g) {
+        int x = left.intValue();
+        int y = top.intValue();
+        int w = width.intValue();
+        int h = height.intValue();
+
+        Color prevColor = g.getColor();
+        Stroke prevStroke = g.getStroke();
+
         g.setColor(Color.RED);
-        Stroke stroke = g.getStroke();
         g.setStroke(new BasicStroke(2));
-        g.drawLine(left.intValue(), top.intValue(),  left.intValue() + width.intValue(), top.intValue());
-        g.drawLine(left.intValue(), top.intValue(),  left.intValue(), top.intValue() + height.intValue());
-        g.drawLine(left.intValue() + width.intValue(), top.intValue(),  left.intValue() + width.intValue(), top.intValue() + height.intValue());
-        g.drawLine(left.intValue(), top.intValue() + height.intValue(),  left.intValue() + width.intValue(), top.intValue() + height.intValue());
-        g.setStroke(stroke);
+
+        g.drawRect(x, y, w, h);
+
+        g.setStroke(prevStroke);
+        g.setColor(prevColor);
     }
+
     public void setPosition(Vector2<T> newPos) {
         this.left = newPos.x;
         this.top = newPos.y;
@@ -46,17 +54,45 @@ public class Rect<T extends Number> {
         this.left = left;
         this.top = top;
     }
+    public Vector2<T> getPosition() {
+        return new Vector2<T>(left, top);
+    }
+
+    public Vector2<T> getSize() {
+        return new Vector2<T>(width, height);
+    }
+
     public boolean intersects(Rect<T> other) {
-        int this_right = this.left.intValue() + this.width.intValue();
-        int this_bottom = this.top.intValue() + this.height.intValue();
-        int other_right = other.left.intValue() + other.width.intValue();
-        int other_bottom = other.top.intValue() + other.height.intValue();
+        int leftA = this.left.intValue();
+        int topA = this.top.intValue();
+        int rightA = leftA + this.width.intValue();
+        int bottomA = topA + this.height.intValue();
+
+        int leftB = other.left.intValue();
+        int topB = other.top.intValue();
+        int rightB = leftB + other.width.intValue();
+        int bottomB = topB + other.height.intValue();
+
         return (
-                this.left.intValue() < other_right&&
-                        this_right > other.left.intValue() &&
-                        this.top.intValue() < other_bottom &&
-                        this_bottom > other.top.intValue()
+                leftA < rightB &&
+                rightA > leftB &&
+                topA < bottomB &&
+                bottomA > topB
         );
     }
 
+    public boolean contains(T x, T y) {
+        int left = this.left.intValue();
+        int top = this.top.intValue();
+        int width = this.width.intValue();
+        int height = this.height.intValue();
+
+        int right = left + width;
+        int bottom = top + height;
+
+        int xVal = x.intValue();
+        int yVal = y.intValue();
+
+        return (xVal > left && xVal < right && yVal > top && yVal < bottom);
+    }
 }

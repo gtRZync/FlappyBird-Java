@@ -1,5 +1,7 @@
 package flappybird.input;
 
+import flappybird.math.Vector2;
+
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -7,6 +9,7 @@ import java.awt.event.MouseEvent;
 public class Mouse extends MouseAdapter implements ResetState {
     public final ButtonState LEFT_BUTTON;
     public final ButtonState RIGHT_BUTTON;
+    private Vector2<Integer> position;
 
     public Mouse(Component ctx) {
         if (ctx == null) {
@@ -39,5 +42,15 @@ public class Mouse extends MouseAdapter implements ResetState {
         LEFT_BUTTON.released = false;
         RIGHT_BUTTON.pressed = false;
         RIGHT_BUTTON.released = false;
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        position.x = e.getX();
+        position.y = e.getY();
+    }
+
+    public Vector2<Integer> getPosition() {
+        return position;
     }
 }

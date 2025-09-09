@@ -27,7 +27,6 @@ public class Bird
     public boolean isGrounded = false;
 
     private float animationTimer = 0.f;
-    private float idleTimer = 0.f;
     //? Animation speed in frames per second (modifiable)
     private static final float ANIMATION_FPS = 10.f;
     //? Duration each animation frame is shown (derived from FPS)
@@ -46,8 +45,9 @@ public class Bird
         if (observer == null) {
             throw new IllegalArgumentException("Observer cannot be null.");
         }
+        float scale = 1.7f;
         this.position = new Vector2<>(DEFAULT_X, STARTING_Y);
-        this.size = new Vector2<>((int)(GameConstants.BIRD[0].getWidth() * 1.8), (int)(GameConstants.BIRD[0].getHeight() * 1.7));
+        this.size = new Vector2<>((int)(GameConstants.BIRD[0].getWidth() * scale), (int)(GameConstants.BIRD[0].getHeight() * scale));
         this.observer = observer;
         bounds = new Rect<>(DEFAULT_X, STARTING_Y,(float)size.x,(float)size.y);
     }
@@ -85,18 +85,14 @@ public class Bird
         );
         g.dispose();
     }
+    //!Just rotate the rendering not the actual positions
     public void drawBounds(Graphics2D g2) {
-        bounds.draw(g2);
-    }
-
-    private void idleBob(float deltaTime) {
-        final float amplitude = 2.f;
-        final float speed = 8.f;
-        idleTimer += deltaTime;
-
-        float offsetY = (float) (amplitude * Math.sin(speed * idleTimer));
-
-        move(0.f, offsetY);
+        Graphics2D g = (Graphics2D) g2.create();
+        double width = bounds.getPosition().x + bounds.getSize().x /  2.f;
+        double height = bounds.getPosition().y + bounds.getSize().y /  2.f;
+        g.rotate(tiltAngle, width, height);
+        bounds.draw(g);
+        g.dispose();
     }
 
     private void animate( float deltaTime) {
@@ -146,18 +142,14 @@ public class Bird
         }
     }
     public void updateAnimation(GameState gamestate, float deltaTime) {
-        if(gamestate == GameState.MENU) return;
-
         animate(deltaTime);
 
-        if(gamestate == GameState.START) {
-            idleBob(deltaTime);
-        }else if(gamestate == GameState.PLAYING) {
+        if(gamestate == GameState.PLAYING) {
             tilt(deltaTime);
         }
     }
 
-    private BufferedImage getCurrentFrame() {
+    public BufferedImage getCurrentFrame() {
         return GameConstants.BIRD[currentFrame];
     }
 

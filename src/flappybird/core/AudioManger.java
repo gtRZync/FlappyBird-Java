@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.Objects;
 
 public enum AudioManger {
-    DIE("/assets/audio/die.wav"),
-    SWOOSH("/assets/audio/swoosh.wav"),
-    POINT("/assets/audio/point.wav"),
-    HIT("/assets/audio/hit.wav");
+    DIE(GameConstants.AUDIO_DIR+"die.wav"),
+    SWOOSH(GameConstants.AUDIO_DIR+"swoosh.wav"),
+    POINT(GameConstants.AUDIO_DIR+"point.wav"),
+    HIT(GameConstants.AUDIO_DIR+"hit.wav");
 
     AudioManger(String filename) {
         try

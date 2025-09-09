@@ -3,11 +3,7 @@ package flappybird.core;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import java.awt.Graphics2D;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Color;
+import java.awt.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import flappybird.input.Key;
+import flappybird.math.Vector2;
 import flappybird.utils.Utils;
 import flappybird.entities.*;
 import flappybird.input.InputManager;
@@ -35,6 +32,7 @@ public class GamePanel extends JPanel implements ActionListener{
     private static float FPS = 0.f;
     private float floorX;
     private float floorX2;
+    private float bobTimer = 0.f;
 
     // === Player & Input ===
     private final Bird bird;
@@ -49,7 +47,6 @@ public class GamePanel extends JPanel implements ActionListener{
     private boolean spawningStarted = false;
 
 
-
     GamePanel(int width, int height) {
         this.setPreferredSize(new Dimension(width, height));
         this.bird = new Bird( this);
@@ -61,21 +58,71 @@ public class GamePanel extends JPanel implements ActionListener{
         game.start();
     }
 
+    private void drawTitle(Graphics2D g2) {
+        final int OFFSET_TITLE_BIRD = 30;
+        if(GameConstants.TITLE != null) {
+            int titleBaseWidth = GameConstants.TITLE.getWidth();
+            int titleBaseHeight = GameConstants.TITLE.getHeight();
+            final float scale = 3.5f;
+
+            int titleWidth = Math.round(titleBaseWidth * scale);
+            int titleHeight = Math.round(titleBaseHeight * scale);
+
+            Vector2<Integer> birdSize = bird.getSize();
+            final float birdScale = 1.15f;
+            int birdX = (int) (birdSize.x * birdScale);
+            int birdY = (int) (birdSize.y * birdScale);
+
+            int totalWidth = titleWidth + OFFSET_TITLE_BIRD + birdX;
+
+            int titlePosX = (getWidth() - totalWidth) / 2;
+            int titlePosY = (getHeight() - titleHeight) / 4;
+            int titleCenterY = titlePosY + titleHeight / 2;
+
+
+            int birdPosX = titlePosX + titleWidth + OFFSET_TITLE_BIRD;
+            int birdPosY = titleCenterY - birdY / 2;
+
+            float speed = 7.f;
+            float amplitude = 310.f;
+            bobTimer += deltaTime;
+            int offsetY = Math.round((float) Math.sin(bobTimer * speed) * deltaTime * amplitude);
+            titlePosY += offsetY;
+            birdPosY += offsetY;
+
+            g2.drawImage(GameConstants.TITLE, titlePosX, titlePosY, titleWidth, titleHeight, this);
+            g2.drawImage(bird.getCurrentFrame(), birdPosX, birdPosY, birdX, birdY, this);
+        }
+    }
+
+    private void drawPreGame(Graphics2D g2) {
+        if(GameConstants.MESSAGE != null) {
+            final float scale = 2.f;
+            int width = (int) (GameConstants.MESSAGE.getWidth() * scale);
+            int height = (int) (GameConstants.MESSAGE.getHeight() * scale);
+            int x = (getWidth() - width ) / 2;
+            int y = (getHeight() - height) / 2;
+            g2.drawImage(GameConstants.MESSAGE,x, y, width, height , this);
+        }
+    }
+
+    private void drawMenus(Graphics2D g2) {
+        if(gameState == GameState.MENU) {
+            drawTitle(g2);
+        } else if (gameState == GameState.START) {
+            drawPreGame(g2);
+        }
+    }
+
     private void drawBackground(Graphics2D g2) {
         if(GameConstants.BACKGROUND != null) {
             g2.drawImage(GameConstants.BACKGROUND,0, 0, getWidth(), getHeight(), this);
         }
-
-        if(gameState.equals(GameState.MENU) && GameConstants.MESSAGE != null) {
-            int width = (getWidth() - getWidth() / 2) / 2;
-            int height = (getHeight() - getHeight() / 2) / 2;
-            g2.drawImage(GameConstants.MESSAGE,width, height, getWidth() / 2, getHeight() / 2 , this);
-        }
     }
     private void drawFloor(Graphics2D g2) {
         if(GameConstants.FLOOR != null) {
-            g2.drawImage(GameConstants.FLOOR, (int)floorX, getHeight() - GameConstants.FLOOR_HEIGHT, getWidth(), GameConstants.FLOOR_HEIGHT, this);
-            g2.drawImage(GameConstants.FLOOR, (int)floorX2, getHeight() - GameConstants.FLOOR_HEIGHT, getWidth(), GameConstants.FLOOR_HEIGHT, this);
+            g2.drawImage(GameConstants.FLOOR, (int)floorX, getHeight() + GameConstants.FLOOR_SCALE_OFFSET - GameConstants.VIRTUAL_FLOOR_HEIGHT, getWidth(), GameConstants.VIRTUAL_FLOOR_HEIGHT, this);
+            g2.drawImage(GameConstants.FLOOR, (int)floorX2, getHeight() + GameConstants.FLOOR_SCALE_OFFSET - GameConstants.VIRTUAL_FLOOR_HEIGHT, getWidth(), GameConstants.VIRTUAL_FLOOR_HEIGHT, this);
         }
     }
 
@@ -91,7 +138,7 @@ public class GamePanel extends JPanel implements ActionListener{
     }
 
     private void applyParallax() {
-        if(gameState.equals(GameState.GAME_OVER) || gameState.equals(GameState.MENU)) return;
+        if(gameState == GameState.GAME_OVER) return;
         int FG_X_SPEED = -3;
         floorX += FG_X_SPEED;
         floorX2 += FG_X_SPEED;
@@ -137,16 +184,18 @@ public class GamePanel extends JPanel implements ActionListener{
 
     private void addPipe()
     {
-        int height = GameConstants.PIPE.getHeight();
+        int height = (int)(GameConstants.PIPE.getHeight() * Pipe.scale);
         int randPipeHeightChooser = rand.nextInt(2); //* 0 - Upper Pipe, 1 - Bottom Pipe
         int[] heights = computeHeights(randPipeHeightChooser, getHeight());
 
         for (int i = 0; i < 2; i++) {
             int h = height - heights[i];
             heights[i] += h;
-            int x = getWidth() + Pipe.WIDTH;
+            int x = getWidth() + (int) (GameConstants.PIPE.getWidth() * Pipe.scale);
             int y = (i % 2 == 0) ? -h : (getHeight() + h) ;//! Add '- FLOOR_HEIGHT'
             pipes.add(new Pipe(x , y, heights[i], GameConstants.PIPE, this));
+            System.out.println("h : " + h);
+            System.out.println("coordinate : .x = " + x + " .y = " + y);
         }
     }
 
@@ -180,12 +229,15 @@ public class GamePanel extends JPanel implements ActionListener{
     }
 
     private void startPipeSpawning() {
-        long currentTime = System.nanoTime();
-        float spawnTime = (currentTime - lastPipeTimer) / 1e9f;
-        final float START_PIPE_SPAWNING = 3.f;
+        if(!spawningStarted){
+            long currentTime = System.nanoTime();
+            float spawnTime = (currentTime - lastPipeTimer) / 1e9f;
+            final float START_PIPE_SPAWNING = 1.f;
 
-        if(spawnTime >= START_PIPE_SPAWNING) {
-            spawningStarted = true;
+            if (spawnTime >= START_PIPE_SPAWNING) {
+                spawningStarted = true;
+                spawnTime = 0.f;
+            }
         }
     }
 
@@ -200,8 +252,13 @@ public class GamePanel extends JPanel implements ActionListener{
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR); // or VALUE_INTERPOLATION_BICUBIC
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
         drawBackground(g2);
-        if(!gameState.equals(GameState.MENU))
+        drawMenus(g2);
+        if(gameState != GameState.MENU)
         {
             if (debug)
                 bird.drawBounds(g2);
@@ -283,7 +340,7 @@ public class GamePanel extends JPanel implements ActionListener{
                     AudioManger.DIE.play();
                 }
             }
-            pipes.removeIf(p -> p.getCx() < - Pipe.WIDTH);
+            pipes.removeIf(p -> p.getCx() < - p.getWidth());
             setShouldSpawn();
             if(shouldSpawn)
             {
