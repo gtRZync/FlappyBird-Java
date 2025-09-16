@@ -270,6 +270,7 @@ public class GamePanel extends JPanel implements ActionListener{
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         drawBackground(g2);
+        //TODO: correct the superfast flap bug on the menu screen (due to delta time accumulation when screen is still invisible i think)
         drawMenus(g2);
         if(gameState != GameState.MENU)
         {
