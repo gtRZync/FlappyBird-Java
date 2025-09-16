@@ -33,21 +33,21 @@ public class KeyBoard extends KeyAdapter implements ResetState {
     }
 
     public boolean isPressed(Key key) {
-        return keyStates.get(key).pressed;
+        return keyStates.get(key).down;
     }
     public boolean isReleased(Key key) {
-        return keyStates.get(key).released;
+        return keyStates.get(key).up;
     }
     public boolean isHeld(Key key) {
-        return keyStates.get(key).held;
+        return keyStates.get(key).pressed;
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         for(Key key : Key.values()) {
             if(e.getKeyCode() == key.vKey()) {
-                keyStates.get(key).pressed = true;
-                keyStates.get(key).released = false;
+                keyStates.get(key).down = true;
+                keyStates.get(key).up = false;
             }
         }
     }
@@ -56,8 +56,8 @@ public class KeyBoard extends KeyAdapter implements ResetState {
     public void keyReleased(KeyEvent e) {
         for(Key key : Key.values()) {
             if(e.getKeyCode() == key.vKey()) {
-                keyStates.get(key).pressed = false;
-                keyStates.get(key).released = true;
+                keyStates.get(key).down = false;
+                keyStates.get(key).up = true;
             }
         }
     }
@@ -65,8 +65,8 @@ public class KeyBoard extends KeyAdapter implements ResetState {
     @Override
     public void resetInputStatesAfter() {
         for(Key key : Key.values()) {
-            keyStates.get(key).released = false;
-            keyStates.get(key).pressed = false;
+            keyStates.get(key).up = false;
+            keyStates.get(key).down = false;
         }
     }
 }

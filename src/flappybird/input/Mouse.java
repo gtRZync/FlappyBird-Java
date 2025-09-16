@@ -23,25 +23,25 @@ public class Mouse extends MouseAdapter implements ResetState {
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            LEFT_BUTTON.pressed = true;
-            LEFT_BUTTON.released = false;
+            LEFT_BUTTON.down = true;
+            LEFT_BUTTON.up = false;
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            LEFT_BUTTON.pressed = false;
-            LEFT_BUTTON.released = true;
+            LEFT_BUTTON.down = false;
+            LEFT_BUTTON.up = true;
         }
     }
 
     @Override
     public void resetInputStatesAfter() {
-        LEFT_BUTTON.pressed = false;
-        LEFT_BUTTON.released = false;
-        RIGHT_BUTTON.pressed = false;
-        RIGHT_BUTTON.released = false;
+        LEFT_BUTTON.down = false;
+        LEFT_BUTTON.up = false;
+        RIGHT_BUTTON.down = false;
+        RIGHT_BUTTON.up = false;
     }
 
     @Override
