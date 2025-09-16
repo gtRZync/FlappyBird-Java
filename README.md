@@ -15,9 +15,9 @@ This project demonstrates basic game programming concepts such as animation, col
 
 ---
 
-| Game Menu                                                          |
-|--------------------------------------------------------------------|
-| [![Game MENU](res/screenshots/menu.gif)](res/screenshots/menu.mp4) |
+| Game Menu                              |
+|----------------------------------------|
+| ![Game MENU](res/screenshots/menu.gif) |
 
 | Game Start                                 | Gameplay                              |
 |--------------------------------------------|---------------------------------------|
