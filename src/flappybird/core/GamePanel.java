@@ -54,8 +54,23 @@ public class GamePanel extends JPanel implements ActionListener{
         floorX2 = width;
         setFocusable(true);
         inputManager = new InputManager(this);
+        //TODO: maybe add a loadAll(HashMap <String, String> sounds)
+        SoundManager.init();
+        SoundManager.loadSound("died", GameConstants.AUDIO_DIR+"die.wav");
+        SoundManager.loadSound("scored", GameConstants.AUDIO_DIR+"point.wav");
+        SoundManager.loadSound("collided", GameConstants.AUDIO_DIR+"hit.wav");
+        SoundManager.loadSound("jumped", GameConstants.AUDIO_DIR+"swoosh.wav");
+        SoundManager.loadSingleInstance("Menu Theme", GameConstants.AUDIO_DIR+"FlappyBird_Menu.wav");
         Timer game = new Timer(GameConstants.DELAY, this);
         game.start();
+    }
+
+    private void playMenuTheme() {
+        if(gameState != GameState.MENU) {
+            SoundManager.stopInstance("Menu Theme");
+        }else {
+            SoundManager.playInstance("Menu Theme");
+        }
     }
 
     private void drawTitle(Graphics2D g2) {
@@ -133,7 +148,7 @@ public class GamePanel extends JPanel implements ActionListener{
         if(!pipes.getFirst().isScored() && pipes.getFirst().getCx() < bird.getPosition().x) {
             score += 1;
             pipes.getFirst().setScored(true);
-            AudioManger.POINT.play();
+            SoundManager.play("scored");
         }
     }
 
@@ -151,7 +166,6 @@ public class GamePanel extends JPanel implements ActionListener{
     private void updateVerticalMotion()
     {
         if(keyJumped || mouseJumped) {
-            AudioManger.SWOOSH.play();
             bird.velocityY = Bird.JUMP_VELOCITY;
             bird.startHeadUpTimer(true);
         }else {
@@ -236,7 +250,6 @@ public class GamePanel extends JPanel implements ActionListener{
 
             if (spawnTime >= START_PIPE_SPAWNING) {
                 spawningStarted = true;
-                spawnTime = 0.f;
             }
         }
     }
@@ -278,6 +291,11 @@ public class GamePanel extends JPanel implements ActionListener{
             g2.setColor(Color.WHITE);
             g2.drawString(Integer.toString(this.score), getWidth() / 2, 100);
         }
+        g2.setColor(Color.BLACK);
+        g2.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
+        g2.drawString("numbers of pipes : " + pipes.size(), getWidth() - 150, 15);
+        g2.drawString(String.format("FPS : %d", (int)FPS), 0, 15);
+
         drawFloor(g2);
     }
 
@@ -291,12 +309,14 @@ public class GamePanel extends JPanel implements ActionListener{
         }
 
 
-        if(inputManager.mouse.LEFT_BUTTON.pressed && !mouseJumped)
+        if(inputManager.mouse.LEFT_BUTTON.down && !mouseJumped)
         {
             mouseJumped = true;
             startGame();
+            if(gameState == GameState.PLAYING)
+                SoundManager.play("jumped");
         }
-        if(inputManager.mouse.LEFT_BUTTON.released) {
+        if(inputManager.mouse.LEFT_BUTTON.up) {
             mouseJumped = false;
         }
 
@@ -304,6 +324,8 @@ public class GamePanel extends JPanel implements ActionListener{
         if(inputManager.keyBoard.isPressed(Key.SPACE) && !keyJumped) {
             keyJumped = true;
             startGame();
+            if(gameState == GameState.PLAYING)
+                SoundManager.play("jumped");
         }
         if(inputManager.keyBoard.isReleased(Key.SPACE)) {
             keyJumped = false;
@@ -316,6 +338,7 @@ public class GamePanel extends JPanel implements ActionListener{
         processInput();
         calculateFPS();
         applyParallax();
+        playMenuTheme();
         bird.updateAnimation(gameState, deltaTime);
 
         if(gameState == GameState.PLAYING)
@@ -335,9 +358,9 @@ public class GamePanel extends JPanel implements ActionListener{
             for (Pipe p : pipes) {
                 p.move(GameConstants.X_SPEED, 0.f);
                 if(bird.isCollidedWith(p.getBounds())) {
-                    AudioManger.HIT.play();
+                    SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
-                    AudioManger.DIE.play();
+                    SoundManager.play("died");
                 }
             }
             pipes.removeIf(p -> p.getCx() < - p.getWidth());

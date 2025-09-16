@@ -9,25 +9,32 @@ import java.awt.event.WindowEvent;
 public class FlappyBird {
     public static void main(String[] args) {
         ImageIcon icon = new ImageIcon("icon.png");
+
         JFrame frame = new JFrame(GameConstants.GAME_NAME);
         frame.setIconImage(icon.getImage());
         frame.setSize(new Dimension(GameConstants.SCREEN_WIDTH, GameConstants.SCREEN_HEIGHT));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.add(new GamePanel(GameConstants.SCREEN_WIDTH, GameConstants.SCREEN_HEIGHT));
         frame.pack();
+        frame.setVisible(true);
+
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                AudioManger.SWOOSH.close();
-                AudioManger.DIE.close();
-                AudioManger.HIT.close();
-                AudioManger.POINT.close();
+                frame.setVisible(false);
 
-                frame.dispose();
+                new Thread(() -> {
+                    long s = System.currentTimeMillis();
+                    SoundManager.shutdown();
+                    long end = System.currentTimeMillis();
+                    System.out.println("\n[INFO] - Sound cleanup took "+ (end - s)/1000+"s.");
+                    frame.dispose();
+                    System.exit(0);
+                }).start();
             }
         });
-        frame.setVisible(true);
     }
 }
+
