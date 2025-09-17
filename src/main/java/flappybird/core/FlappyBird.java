@@ -25,11 +25,12 @@ public class FlappyBird {
             public void windowClosing(WindowEvent e) {
                 frame.setVisible(false);
 
+                //TODO: add better cleanup that stops the timer and everything
                 new Thread(() -> {
-                    long s = System.currentTimeMillis();
+                    long s = System.nanoTime();
                     SoundManager.shutdown();
-                    long end = System.currentTimeMillis();
-                    System.out.println("\n[INFO] - Sound cleanup took "+ (end - s)/1000+"s.");
+                    long end = System.nanoTime();
+                    System.out.println("\n[INFO] - Sound cleanup took "+ (float)(end - s)/1_000_000_000+"ms.");
                     frame.dispose();
                     System.exit(0);
                 }).start();

@@ -55,11 +55,13 @@ public class GamePanel extends JPanel implements ActionListener{
         setFocusable(true);
         inputManager = new InputManager(this);
         //TODO: maybe add a loadAll(HashMap <String, String> sounds)
+        //TODO: add a loading menu and load the assets there, with a representative loading bar
         SoundManager.init();
         SoundManager.loadSound("died", GameConstants.AUDIO_DIR+"die.wav");
         SoundManager.loadSound("scored", GameConstants.AUDIO_DIR+"point.wav");
         SoundManager.loadSound("collided", GameConstants.AUDIO_DIR+"hit.wav");
-        SoundManager.loadSound("jumped", GameConstants.AUDIO_DIR+"swoosh.wav");
+        SoundManager.loadSound("jumped", GameConstants.AUDIO_DIR+"wing.wav");
+        SoundManager.loadSound("transition", GameConstants.AUDIO_DIR+"swoosh.wav");
         SoundManager.loadSingleInstance("Menu Theme", GameConstants.AUDIO_DIR+"FlappyBird_Menu.wav");
         Timer game = new Timer(GameConstants.DELAY, this);
         game.start();
@@ -206,7 +208,7 @@ public class GamePanel extends JPanel implements ActionListener{
             int h = height - heights[i];
             heights[i] += h;
             int x = getWidth() + (int) (GameConstants.PIPE.getWidth() * Pipe.scale);
-            int y = (i % 2 == 0) ? -h : (getHeight() + h) ;//! Add '- FLOOR_HEIGHT'
+            int y = (i % 2 == 0) ? -h : (getHeight() + h);//! Add '- GameConstants.FLOOR_HEIGHT'
             pipes.add(new Pipe(x , y, heights[i], GameConstants.PIPE, this));
             System.out.println("h : " + h);
             System.out.println("coordinate : .x = " + x + " .y = " + y);
@@ -232,11 +234,13 @@ public class GamePanel extends JPanel implements ActionListener{
     private void startGame()
     {
         if(gameState.equals(GameState.MENU)) {
+            SoundManager.play("transition");
             this.gameState = GameState.START;
         } else if(gameState.equals(GameState.START)) {
             this.gameState = GameState.PLAYING;
             lastPipeTimer = System.nanoTime();
         }else if(gameState.equals(GameState.GAME_OVER)) {
+            SoundManager.play("transition");
             resetGame();
             this.gameState = GameState.START;
         }
@@ -359,6 +363,7 @@ public class GamePanel extends JPanel implements ActionListener{
             for (Pipe p : pipes) {
                 p.move(GameConstants.X_SPEED, 0.f);
                 if(bird.isCollidedWith(p.getBounds())) {
+                    //TODO: add delay, only play died after collided has ended
                     SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
                     SoundManager.play("died");
