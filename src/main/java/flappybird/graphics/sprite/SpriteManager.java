@@ -33,7 +33,7 @@ public class SpriteManager {
         return original;
     }
 
-    public Texture getSprite(String id) {
+    public Texture getTexture(String id) {
         Texture texture = textureMap.get(id);
         if(texture == null) {
             System.out.printf("[WARNING] - Texture %s was not loaded.\n", id);
