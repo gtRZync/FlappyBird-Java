@@ -1,0 +1,289 @@
+{
+  "sprites": [
+    {
+      "fileName": "0.png",
+      "width": 24,
+      "height": 36,
+      "x": 911,
+      "y": 490
+    },
+    {
+      "fileName": "1.png",
+      "width": 16,
+      "height": 36,
+      "x": 917,
+      "y": 168
+    },
+    {
+      "fileName": "2.png",
+      "width": 24,
+      "height": 36,
+      "x": 755,
+      "y": 572
+    },
+    {
+      "fileName": "3.png",
+      "width": 24,
+      "height": 36,
+      "x": 781,
+      "y": 572
+    },
+    {
+      "fileName": "4.png",
+      "width": 24,
+      "height": 36,
+      "x": 807,
+      "y": 572
+    },
+    {
+      "fileName": "5.png",
+      "width": 24,
+      "height": 36,
+      "x": 833,
+      "y": 572
+    },
+    {
+      "fileName": "6.png",
+      "width": 24,
+      "height": 36,
+      "x": 859,
+      "y": 572
+    },
+    {
+      "fileName": "7.png",
+      "width": 24,
+      "height": 36,
+      "x": 885,
+      "y": 572
+    },
+    {
+      "fileName": "8.png",
+      "width": 24,
+      "height": 36,
+      "x": 911,
+      "y": 572
+    },
+    {
+      "fileName": "9.png",
+      "width": 24,
+      "height": 36,
+      "x": 581,
+      "y": 231
+    },
+    {
+      "fileName": "background-day.png",
+      "width": 288,
+      "height": 512,
+      "x": 1,
+      "y": 1
+    },
+    {
+      "fileName": "background-night.png",
+      "width": 288,
+      "height": 512,
+      "x": 291,
+      "y": 1
+    },
+    {
+      "fileName": "base.png",
+      "width": 336,
+      "height": 112,
+      "x": 1,
+      "y": 515
+    },
+    {
+      "fileName": "bluebird-downflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 607,
+      "y": 231
+    },
+    {
+      "fileName": "bluebird-midflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 643,
+      "y": 231
+    },
+    {
+      "fileName": "bluebird-upflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 679,
+      "y": 231
+    },
+    {
+      "fileName": "flappybird.png",
+      "width": 96,
+      "height": 22,
+      "x": 755,
+      "y": 548
+    },
+    {
+      "fileName": "floor.png",
+      "width": 154,
+      "height": 56,
+      "x": 755,
+      "y": 490
+    },
+    {
+      "fileName": "gameover.png",
+      "width": 192,
+      "height": 42,
+      "x": 339,
+      "y": 515
+    },
+    {
+      "fileName": "menu.png",
+      "width": 40,
+      "height": 14,
+      "x": 863,
+      "y": 469
+    },
+    {
+      "fileName": "menupressed.png",
+      "width": 40,
+      "height": 14,
+      "x": 853,
+      "y": 548
+    },
+    {
+      "fileName": "message.png",
+      "width": 184,
+      "height": 165,
+      "x": 755,
+      "y": 1
+    },
+    {
+      "fileName": "ok.png",
+      "width": 40,
+      "height": 14,
+      "x": 895,
+      "y": 548
+    },
+    {
+      "fileName": "okpressed.png",
+      "width": 40,
+      "height": 14,
+      "x": 755,
+      "y": 610
+    },
+    {
+      "fileName": "pause.png",
+      "width": 13,
+      "height": 14,
+      "x": 917,
+      "y": 206
+    },
+    {
+      "fileName": "pausepressed.png",
+      "width": 13,
+      "height": 14,
+      "x": 917,
+      "y": 222
+    },
+    {
+      "fileName": "pipe-green.png",
+      "width": 52,
+      "height": 320,
+      "x": 755,
+      "y": 168
+    },
+    {
+      "fileName": "pipe-red.png",
+      "width": 52,
+      "height": 320,
+      "x": 809,
+      "y": 168
+    },
+    {
+      "fileName": "pipe2.png",
+      "width": 52,
+      "height": 299,
+      "x": 863,
+      "y": 168
+    },
+    {
+      "fileName": "redbird-downflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 715,
+      "y": 231
+    },
+    {
+      "fileName": "redbird-midflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 581,
+      "y": 269
+    },
+    {
+      "fileName": "redbird-upflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 617,
+      "y": 269
+    },
+    {
+      "fileName": "resume.png",
+      "width": 13,
+      "height": 14,
+      "x": 917,
+      "y": 238
+    },
+    {
+      "fileName": "resumepressed.png",
+      "width": 13,
+      "height": 14,
+      "x": 917,
+      "y": 254
+    },
+    {
+      "fileName": "score.png",
+      "width": 172,
+      "height": 228,
+      "x": 581,
+      "y": 1
+    },
+    {
+      "fileName": "start.png",
+      "width": 40,
+      "height": 14,
+      "x": 797,
+      "y": 610
+    },
+    {
+      "fileName": "startpressed.png",
+      "width": 40,
+      "height": 14,
+      "x": 839,
+      "y": 610
+    },
+    {
+      "fileName": "yellowbird-downflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 653,
+      "y": 269
+    },
+    {
+      "fileName": "yellowbird-midflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 689,
+      "y": 269
+    },
+    {
+      "fileName": "yellowbird-upflap.png",
+      "width": 34,
+      "height": 24,
+      "x": 581,
+      "y": 295
+    }
+  ],
+  "packMode": "bin",
+  "padding": 1,
+  "backgroundColor": "rgba(0, 0, 0, 0)",
+  "spriteSheetWidth": 940,
+  "spriteSheetHeight": 628
+}
