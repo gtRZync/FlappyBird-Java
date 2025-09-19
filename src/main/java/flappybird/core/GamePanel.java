@@ -11,8 +11,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
 
+import flappybird.graphics.sprite.SpriteManager;
 import flappybird.input.Key;
 import flappybird.math.Vector2;
+import flappybird.ui.imagetext.ImageTextRenderer;
 import flappybird.utils.Utils;
 import flappybird.entities.*;
 import flappybird.input.InputManager;
@@ -37,6 +39,7 @@ public class GamePanel extends JPanel implements ActionListener{
     // === Player & Input ===
     private final Bird bird;
     private final InputManager inputManager;
+    private final ImageTextRenderer textRenderer;
     private boolean mouseJumped = false;
     private boolean keyJumped = false;
 
@@ -63,6 +66,13 @@ public class GamePanel extends JPanel implements ActionListener{
         SoundManager.loadSound("jumped", GameConstants.AUDIO_DIR+"wing.wav");
         SoundManager.loadSound("transition", GameConstants.AUDIO_DIR+"swoosh.wav");
         SoundManager.loadSingleInstance("Menu Theme", GameConstants.AUDIO_DIR+"FlappyBird_Menu.wav");
+        try
+        {
+            Class.forName("flappybird.graphics.sprite.SpriteManager");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("[ERROR] - Class SpriteManager was not found : ", e);
+        }
+        textRenderer = new ImageTextRenderer(new Vector2<>(width, height));
         Timer game = new Timer(GameConstants.DELAY, this);
         game.start();
     }
@@ -146,8 +156,8 @@ public class GamePanel extends JPanel implements ActionListener{
     private void setScore()
     {
         if (!spawningStarted) return;
-
-        if(!pipes.getFirst().isScored() && pipes.getFirst().getCx() < bird.getPosition().x) {
+        int scoringOffset = 30;//!px
+        if(!pipes.getFirst().isScored() && (pipes.getFirst().getCx() + scoringOffset) < bird.getPosition().x) {
             score += 1;
             pipes.getFirst().setScored(true);
             SoundManager.play("scored");
@@ -210,8 +220,6 @@ public class GamePanel extends JPanel implements ActionListener{
             int x = getWidth() + (int) (GameConstants.PIPE.getWidth() * Pipe.scale);
             int y = (i % 2 == 0) ? -h : (getHeight() + h);//! Add '- GameConstants.FLOOR_HEIGHT'
             pipes.add(new Pipe(x , y, heights[i], GameConstants.PIPE, this));
-            System.out.println("h : " + h);
-            System.out.println("coordinate : .x = " + x + " .y = " + y);
         }
     }
 
@@ -287,14 +295,7 @@ public class GamePanel extends JPanel implements ActionListener{
                 }
             }
             bird.drawSprite(g2);
-            g2.setColor(Color.BLACK);
-            g2.setFont(new Font("Wobble Board", Font.PLAIN, 30));
-            g2.drawString(Integer.toString(this.score), (getWidth() / 2) - 3, 100);
-            g2.drawString(Integer.toString(this.score), (getWidth() / 2) + 3, 100);
-            g2.drawString(Integer.toString(this.score), (getWidth() / 2), 100 - 3);
-            g2.drawString(Integer.toString(this.score), (getWidth() / 2), 100 + 3);
-            g2.setColor(Color.WHITE);
-            g2.drawString(Integer.toString(this.score), getWidth() / 2, 100);
+            textRenderer.renderScore(g2, score);
         }
         g2.setColor(Color.BLACK);
         g2.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
