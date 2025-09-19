@@ -49,7 +49,7 @@ public class ImageTextRenderer {
                 }
             }
             int posX = (w - sizeW) / 2;
-            int posY = (h - sizeH) / 10;
+            int posY = (h - sizeH) / 15;
             for(int i = 0 ; i < scoreSprite.size(); i++) {
                 scoreSprite.get(i).setPosition(posX + (i * (defaultWidth + paddingX )), posY);
             }
