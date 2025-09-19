@@ -1,5 +1,6 @@
 package flappybird.graphics.sprite;
 
+import flappybird.core.GameConstants;
 import flappybird.graphics.sprite.data.SpriteData;
 import flappybird.graphics.sprite.io.SpriteJsonLoader;
 import flappybird.graphics.texture.Texture;
@@ -10,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SpriteManager {
-    private final Map<String, Texture> textureMap;
+    private static final Map<String, Texture> textureMap;
 
-    public SpriteManager(String spritesheetPath, String jsonFilePath) {
+    static {
         textureMap = new HashMap<>();
-        Texture spritesheet = new Texture(spritesheetPath);
-        SpriteData data = SpriteJsonLoader.fromJson(jsonFilePath);
+        Texture spritesheet = new Texture(GameConstants.SPRITESHEET_PATH);
+        SpriteData data = SpriteJsonLoader.fromJson(GameConstants.JSON_FILE_PATH);
         for(SpriteRect rect : data.getSpriteData()) {
             BufferedImage image = spritesheet.getImage().getSubimage(rect.x, rect.y, rect.width, rect.height);
             Texture texture = new Texture(image);
@@ -25,7 +26,7 @@ public class SpriteManager {
     }
 
     //!might make it rmExtension(String original)
-    private String rmPng(String original) {
+    private static String rmPng(String original) {
         if(original.endsWith(".png")) {
             return original.substring(0, original.lastIndexOf('.'));
         }
@@ -33,11 +34,10 @@ public class SpriteManager {
         return original;
     }
 
-    public Texture getTexture(String id) {
+    public static Texture getTexture(String id) {
         Texture texture = textureMap.get(id);
         if(texture == null) {
-            System.out.printf("[WARNING] - Texture %s was not loaded.\n", id);
-            return null;
+            throw new RuntimeException("[ERROR] - Texture %s was not loaded.\n" + id);
         }
         return texture;
     }

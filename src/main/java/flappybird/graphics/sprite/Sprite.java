@@ -12,12 +12,36 @@ public class Sprite {
     private int height;
     private Texture texture;
 
-    public Sprite() {
-
+    public Sprite(Texture texture) {
+        this.texture = texture;
+        this.width = texture.getImage().getWidth();
+        this.height = texture.getImage().getHeight();
     }
 
-    public void render(Graphics2D g2, int dx, int dy) {
-        g2.drawImage(texture.getImage(), dx, dy, width, height, null);
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public int getWidth() {
+        return texture.getImage().getWidth();
+    }
+
+    public int getHeight() {
+        return texture.getImage().getHeight();
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+        this.width = texture.getImage().getWidth();
+        this.height = texture.getImage().getHeight();
+    }
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void render(Graphics2D g2) {
+        g2.drawImage(texture.getImage(), x, y, width, height, null);
     }
 
 }
