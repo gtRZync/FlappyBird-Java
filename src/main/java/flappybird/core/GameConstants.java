@@ -9,6 +9,8 @@ public class GameConstants {
     public static final int DAYTIME_DURATION = 15; //!seconds
     public static final String GAME_NAME = "FlappyBird Clone";
     public static final String SPRITES_DIR = "/assets/sprites/";
+    public static final String JSON_FILE_PATH = "/assets/sprites/sprite_sheet.json";
+    public static final String SPRITESHEET_PATH = "/assets/sprites/sprite_sheet.png";
     public static final String AUDIO_DIR = "/assets/audio/";
     public static final int SCREEN_WIDTH = 480;
     public static final int SCREEN_HEIGHT = 650;
