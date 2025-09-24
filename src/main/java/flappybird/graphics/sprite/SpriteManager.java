@@ -34,10 +34,32 @@ public class SpriteManager {
         return original;
     }
 
+    private static boolean idExists(String id) {
+        for(String _id : textureMap.keySet()) {
+            if(id.equalsIgnoreCase(_id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private static String getExistingId(String id) {
+        for(String _id : textureMap.keySet()) {
+            if(id.equalsIgnoreCase(_id)) {
+                return _id;
+            }
+        }
+        //!should never reach here
+        return "";
+    }
+
     public static Texture getTexture(String id) {
         Texture texture = textureMap.get(id);
         if(texture == null) {
-            throw new RuntimeException("[ERROR] - Texture %s was not loaded.\n" + id);
+            if(idExists(id)) {
+                throw new RuntimeException("[ERROR] - Provided id doesn't match database, did you mean : " + getExistingId(id));
+            } else {
+                throw new RuntimeException("[ERROR] - Texture %s was not loaded.\n" + id);
+            }
         }
         return texture;
     }
