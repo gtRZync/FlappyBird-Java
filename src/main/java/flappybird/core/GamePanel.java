@@ -5,21 +5,21 @@ import javax.swing.Timer;
 
 import java.awt.*;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
 import java.util.Random;
 
 import flappybird.graphics.sprite.SpriteManager;
+import flappybird.graphics.texture.Texture;
 import flappybird.input.Key;
 import flappybird.math.Vector2;
+import flappybird.ui.UIManager;
+import flappybird.ui.component.UIButton;
 import flappybird.ui.imagetext.ImageTextRenderer;
 import flappybird.utils.Utils;
 import flappybird.entities.*;
 import flappybird.input.InputManager;
 
-public class GamePanel extends JPanel implements ActionListener{
+public class GamePanel extends JPanel{
     // === Pipes & Spawning ===
     private final ArrayList<Pipe> pipes;
     private boolean shouldSpawn = false;
@@ -39,9 +39,12 @@ public class GamePanel extends JPanel implements ActionListener{
     // === Player & Input ===
     private final Bird bird;
     private final InputManager inputManager;
+    private final UIManager uiManager;
     private final ImageTextRenderer textRenderer;
     private boolean mouseJumped = false;
     private boolean keyJumped = false;
+    private final UIButton startBtn;
+
 
     // === Game State ===
     private GameState gameState = GameState.MENU;
@@ -51,12 +54,14 @@ public class GamePanel extends JPanel implements ActionListener{
 
 
     GamePanel(int width, int height) {
+        this.setLayout(null);
         this.setPreferredSize(new Dimension(width, height));
         this.bird = new Bird( this);
         pipes = new ArrayList<>();
         floorX2 = width;
         setFocusable(true);
         inputManager = new InputManager(this);
+        uiManager = new UIManager();
         //TODO: maybe add a loadAll(HashMap <String, String> sounds)
         //TODO: add a loading menu and load the assets there, with a representative loading bar
         SoundManager.init();
@@ -73,7 +78,13 @@ public class GamePanel extends JPanel implements ActionListener{
             throw new RuntimeException("[ERROR] - Class SpriteManager was not found : ", e);
         }
         textRenderer = new ImageTextRenderer(new Vector2<>(width, height));
-        Timer game = new Timer(GameConstants.DELAY, this);
+        int w =(int)(SpriteManager.getTexture("start").getImage().getWidth() * 4.1f);
+        int h =(int)(SpriteManager.getTexture("start").getImage().getHeight() * 4.1f);
+        startBtn = new UIButton(150, height - 200, w, h,
+        SpriteManager.getTexture("start"), SpriteManager.getTexture("startpressed") );
+        this.add(startBtn.getComponent());
+        uiManager.addElement(startBtn);
+        Timer game = new Timer(GameConstants.DELAY, e -> gameLoop());
         game.start();
     }
 
@@ -87,9 +98,10 @@ public class GamePanel extends JPanel implements ActionListener{
 
     private void drawTitle(Graphics2D g2) {
         final int OFFSET_TITLE_BIRD = 30;
-        if(GameConstants.TITLE != null) {
-            int titleBaseWidth = GameConstants.TITLE.getWidth();
-            int titleBaseHeight = GameConstants.TITLE.getHeight();
+        final Texture TITLE = SpriteManager.getTexture("flappybird");
+        if(TITLE.getImage() != null) {
+            int titleBaseWidth = TITLE.getImage().getWidth();
+            int titleBaseHeight = TITLE.getImage().getHeight();
             final float scale = 3.5f;
 
             int titleWidth = Math.round(titleBaseWidth * scale);
@@ -117,19 +129,20 @@ public class GamePanel extends JPanel implements ActionListener{
             titlePosY += offsetY;
             birdPosY += offsetY;
 
-            g2.drawImage(GameConstants.TITLE, titlePosX, titlePosY, titleWidth, titleHeight, this);
-            g2.drawImage(bird.getCurrentFrame(), birdPosX, birdPosY, birdX, birdY, this);
+            g2.drawImage(SpriteManager.getTexture("flappybird").getImage(), titlePosX, titlePosY, titleWidth, titleHeight, this);
+            g2.drawImage(bird.getTexture().getImage(), birdPosX, birdPosY, birdX, birdY, this);
         }
     }
 
     private void drawPreGame(Graphics2D g2) {
-        if(GameConstants.MESSAGE != null) {
+        Texture MESSAGE = SpriteManager.getTexture("message");
+        if(MESSAGE.getImage() != null) {
             final float scale = 2.f;
-            int width = (int) (GameConstants.MESSAGE.getWidth() * scale);
-            int height = (int) (GameConstants.MESSAGE.getHeight() * scale);
+            int width = (int) (MESSAGE.getImage().getWidth() * scale);
+            int height = (int) (MESSAGE.getImage().getHeight() * scale);
             int x = (getWidth() - width ) / 2;
             int y = (getHeight() - height) / 2;
-            g2.drawImage(GameConstants.MESSAGE,x, y, width, height , this);
+            g2.drawImage(MESSAGE.getImage(),x, y, width, height , this);
         }
     }
 
@@ -142,21 +155,20 @@ public class GamePanel extends JPanel implements ActionListener{
     }
 
     private void drawBackground(Graphics2D g2) {
-        if(GameConstants.BACKGROUND != null) {
-            g2.drawImage(GameConstants.BACKGROUND,0, 0, getWidth(), getHeight(), this);
-        }
+        g2.drawImage(SpriteManager.getTexture("background-day").getImage(),0, 0, getWidth(), getHeight(), this);
     }
     private void drawFloor(Graphics2D g2) {
-        if(GameConstants.FLOOR != null) {
-            g2.drawImage(GameConstants.FLOOR, (int)floorX, getHeight() + GameConstants.FLOOR_SCALE_OFFSET - GameConstants.VIRTUAL_FLOOR_HEIGHT, getWidth(), GameConstants.VIRTUAL_FLOOR_HEIGHT, this);
-            g2.drawImage(GameConstants.FLOOR, (int)floorX2, getHeight() + GameConstants.FLOOR_SCALE_OFFSET - GameConstants.VIRTUAL_FLOOR_HEIGHT, getWidth(), GameConstants.VIRTUAL_FLOOR_HEIGHT, this);
+        final Texture FLOOR = SpriteManager.getTexture("floor");
+        if(FLOOR.getImage() != null) {
+            g2.drawImage(FLOOR.getImage(), (int)floorX, getHeight() + GameConstants.FLOOR_SCALE_OFFSET - GameConstants.VIRTUAL_FLOOR_HEIGHT, getWidth(), GameConstants.VIRTUAL_FLOOR_HEIGHT, this);
+            g2.drawImage(FLOOR.getImage(), (int)floorX2, getHeight() + GameConstants.FLOOR_SCALE_OFFSET - GameConstants.VIRTUAL_FLOOR_HEIGHT, getWidth(), GameConstants.VIRTUAL_FLOOR_HEIGHT, this);
         }
     }
 
     private void setScore()
     {
         if (!spawningStarted) return;
-        int scoringOffset = 30;//!px
+        int scoringOffset = 50;//!px
         if(!pipes.getFirst().isScored() && (pipes.getFirst().getCx() + scoringOffset) < bird.getPosition().x) {
             score += 1;
             pipes.getFirst().setScored(true);
@@ -210,16 +222,16 @@ public class GamePanel extends JPanel implements ActionListener{
 
     private void addPipe()
     {
-        int height = (int)(GameConstants.PIPE.getHeight() * Pipe.scale);
+        int height = (int)(Pipe.getTextureHeight() * Pipe.scale);
         int randPipeHeightChooser = rand.nextInt(2); //* 0 - Upper Pipe, 1 - Bottom Pipe
         int[] heights = computeHeights(randPipeHeightChooser, getHeight());
 
         for (int i = 0; i < 2; i++) {
             int h = height - heights[i];
             heights[i] += h;
-            int x = getWidth() + (int) (GameConstants.PIPE.getWidth() * Pipe.scale);
+            int x = getWidth() + (int) (Pipe.getTextureWidth() * Pipe.scale);
             int y = (i % 2 == 0) ? -h : (getHeight() + h);//! Add '- GameConstants.FLOOR_HEIGHT'
-            pipes.add(new Pipe(x , y, heights[i], GameConstants.PIPE, this));
+            pipes.add(new Pipe(x , y, heights[i], this));
         }
     }
 
@@ -294,18 +306,24 @@ public class GamePanel extends JPanel implements ActionListener{
                     p.drawBounds(g2);
                 }
             }
-            bird.drawSprite(g2);
+            bird.renderTexture(g2);
             textRenderer.renderScore(g2, score);
         }
         g2.setColor(Color.BLACK);
         g2.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
         g2.drawString("numbers of pipes : " + pipes.size(), getWidth() - 150, 15);
+        g2.drawString("GameState : " + gameState, getWidth() - 150, 30);
         g2.drawString(String.format("FPS : %d", (int)FPS), 0, 15);
 
         drawFloor(g2);
     }
 
     private void processInput() {
+        if(startBtn.isUp() && startBtn.isHovered()) {
+            startGame();
+            startBtn.setActive(false);
+        }
+
         if(inputManager.keyBoard.isPressed(Key.ESCAPE) && Utils.notPlaying(gameState)) {
             gameState = GameState.MENU;
             resetGame();
@@ -318,7 +336,6 @@ public class GamePanel extends JPanel implements ActionListener{
         if(inputManager.mouse.LEFT_BUTTON.down && !mouseJumped)
         {
             mouseJumped = true;
-            startGame();
             if(gameState == GameState.PLAYING)
                 SoundManager.play("jumped");
         }
@@ -338,8 +355,7 @@ public class GamePanel extends JPanel implements ActionListener{
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e)
+    private void gameLoop()
     {
         processInput();
         calculateFPS();
@@ -347,6 +363,7 @@ public class GamePanel extends JPanel implements ActionListener{
         playMenuTheme();
         bird.updateAnimation(gameState, deltaTime);
 
+        if(gameState == GameState.MENU) startBtn.setActive(true);
         if(gameState == GameState.PLAYING)
         {
             startPipeSpawning();
@@ -363,7 +380,7 @@ public class GamePanel extends JPanel implements ActionListener{
             }
             for (Pipe p : pipes) {
                 p.move(GameConstants.X_SPEED, 0.f);
-                if(bird.isCollidedWith(p.getBounds())) {
+                if(bird.isCollidedWith(p.getBounds()) || bird.isGrounded) {
                     //TODO: add delay, only play died after collided has ended
                     SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
@@ -381,5 +398,6 @@ public class GamePanel extends JPanel implements ActionListener{
         }
         repaint();
         inputManager.resetInputStatesAfter();
+        uiManager.updateStates();
     }
 }
