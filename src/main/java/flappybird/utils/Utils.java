@@ -1,15 +1,16 @@
 package flappybird.utils;
 
 import flappybird.core.GameState;
+import flappybird.graphics.texture.Texture;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 
 public class Utils {
-    public static BufferedImage flipVertical(BufferedImage original) {
-        int width = original.getWidth();
-        int height = original.getHeight();
+    public static Texture flipTextureVertically(Texture original) {
+        int width = original.getImage().getWidth();
+        int height = original.getImage().getHeight();
 
         BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
@@ -17,10 +18,10 @@ public class Utils {
         transform.translate(0, -height);
         Graphics2D g = flipped.createGraphics();
 
-        g.drawImage(original, transform, null);
+        g.drawImage(original.getImage(), transform, null);
         g.dispose();
 
-        return flipped;
+        return new Texture(flipped);
     }
 
     public static boolean notPlaying(GameState state) {
