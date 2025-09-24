@@ -1,11 +1,13 @@
 package flappybird.entities;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.util.Map;
 
 import flappybird.core.GameState;
 import flappybird.core.GameConstants;
+import flappybird.graphics.sprite.SpriteManager;
+import flappybird.graphics.texture.Texture;
 import flappybird.math.Vector2;
 import flappybird.math.Rect;
 
@@ -40,6 +42,12 @@ public class Bird
     private float headUpTimer = 0.f;
     private boolean startHeadUpTimer;
 
+    private final Map<Integer, Texture> texture = Map.of(
+            0, SpriteManager.getTexture("yellowbird-upflap"),
+            1, SpriteManager.getTexture("yellowbird-midflap"),
+            2, SpriteManager.getTexture("yellowbird-downflap")
+    );
+
 
     public Bird(ImageObserver observer) {
         if (observer == null) {
@@ -47,7 +55,7 @@ public class Bird
         }
         float scale = 1.7f;
         this.position = new Vector2<>(DEFAULT_X, STARTING_Y);
-        this.size = new Vector2<>((int)(GameConstants.BIRD[0].getWidth() * scale), (int)(GameConstants.BIRD[0].getHeight() * scale));
+        this.size = new Vector2<>((int)(getTexture().getImage().getWidth() * scale), (int)(getTexture().getImage().getHeight() * scale));
         this.observer = observer;
         bounds = new Rect<>(DEFAULT_X, STARTING_Y,(float)size.x,(float)size.y);
     }
@@ -70,13 +78,13 @@ public class Bird
         this.position = new Vector2<>(x, y);
     }
 
-    public void drawSprite(Graphics2D g2) {
+    public void renderTexture(Graphics2D g2) {
         Graphics2D g = (Graphics2D) g2.create();
         double width = position.x + size.x /  2.f;
         double height = position.y + size.y /  2.f;
         g.rotate(tiltAngle, width, height);
         g.drawImage(
-                getCurrentFrame(),
+                getTexture().getImage(),
                 this.position.x.intValue(),
                 this.position.y.intValue(),
                 size.x,
@@ -99,7 +107,7 @@ public class Bird
         this.animationTimer += deltaTime;
 
         if(animationTimer >= frameDuration) {
-            currentFrame = (currentFrame + 1) % GameConstants.BIRD.length;
+            currentFrame = (currentFrame + 1) % texture.size();
             animationTimer -= frameDuration;
         }
     }
@@ -142,15 +150,17 @@ public class Bird
         }
     }
     public void updateAnimation(GameState gamestate, float deltaTime) {
-        animate(deltaTime);
+        if(gamestate != GameState.GAME_OVER) {
+            animate(deltaTime);
+        }
 
         if(gamestate == GameState.PLAYING) {
             tilt(deltaTime);
         }
     }
 
-    public BufferedImage getCurrentFrame() {
-        return GameConstants.BIRD[currentFrame];
+    public Texture getTexture() {
+        return texture.get(currentFrame);
     }
 
     public boolean isCollidedWith(Rect<Float> rect) {
