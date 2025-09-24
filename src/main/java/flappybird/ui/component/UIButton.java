@@ -2,28 +2,64 @@ package flappybird.ui.component;
 
 import flappybird.graphics.texture.Texture;
 
-import java.awt.image.BufferedImage;
-import java.awt.Graphics2D;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class UIButton extends UIElement{
-    private String text;
-    private Texture icon;
 
-    public UIButton(int x, int y, int width, int height, Texture icon) {
+    public UIButton(int x, int y, int width, int height, Texture texture, Texture pressedTexture) {
         super(x, y, width, height);
-        this.icon = icon;
+        internal = new JButton();
+        ((JButton)internal).setFocusPainted(false);
+        ((JButton)internal).setBorderPainted(false);
+        ((JButton)internal).setContentAreaFilled(false);
+        internal.setBounds(x, y, width, height);
+
+        ((JButton) internal).setIcon(new ImageIcon(getScaledInstance(texture)));
+        ((JButton) internal).setPressedIcon(new ImageIcon(getScaledInstance(pressedTexture)));
+        setupMouseListener();
     }
 
-    private void renderImage(Graphics2D g2) {
-        g2.drawImage(icon.getImage(), x, y , width, height, null);
+    private Image getScaledInstance(Texture texture) {
+        return texture.getImage().getScaledInstance(internal.getWidth(), internal.getHeight(), Image.SCALE_SMOOTH);
     }
 
-    public void setIcon(Texture icon) {
-        this.icon = icon;
+    public JComponent getComponent() {
+        return internal;
     }
 
-    @Override
-    public void draw(Graphics2D g2) {
-        renderImage(g2);
+    private void setupMouseListener() {
+        internal.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    pressed = true;
+                    up = false;
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    pressed = false;
+                    up = true;
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                hovered = true;
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                hovered = false;
+            }
+        });
     }
 }
