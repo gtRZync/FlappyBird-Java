@@ -1,10 +1,5 @@
 package flappybird.core;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
-
 public class GameConstants {
     public static final int DAYTIME_DURATION = 15; //!seconds
     public static final String GAME_NAME = "FlappyBird Clone";
