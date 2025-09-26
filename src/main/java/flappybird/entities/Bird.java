@@ -35,9 +35,9 @@ public class Bird
     private static final float frameDuration = 1.f / ANIMATION_FPS;
     private int currentFrame = 0;
 
-    private static final double MAX_UPWARD_ANGLE = Math.toRadians(-30); // Tilt up when jumping
+    private static final double MAX_UPWARD_ANGLE = Math.toRadians(-20); // Tilt up when jumping
     private static final double MAX_DOWNWARD_ANGLE = Math.toRadians(90); // Terminal down tilt
-    private static final double TILT_SPEED = Math.toRadians(360); //? How fast it tilts down per second
+    private static final double TILT_SPEED = Math.toRadians(450); //? How fast it tilts down per second
 
     private float headUpTimer = 0.f;
     private boolean startHeadUpTimer;
@@ -126,7 +126,7 @@ public class Bird
 
     private boolean shouldKeepHeadUp(float deltaTime) {
         boolean keepHeadUp = false;
-        final float KEEP_HEAD_UP_THRESHOLD = .6f;
+        final float KEEP_HEAD_UP_THRESHOLD = .49f;
         if(startHeadUpTimer) {
             headUpTimer += deltaTime;
             if(headUpTimer <= KEEP_HEAD_UP_THRESHOLD) {
