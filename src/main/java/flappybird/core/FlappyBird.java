@@ -16,7 +16,8 @@ public class FlappyBird {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
-        frame.add(new GamePanel(GameConstants.SCREEN_WIDTH, GameConstants.SCREEN_HEIGHT));
+        GamePanel gamePanel = new GamePanel(GameConstants.SCREEN_WIDTH, GameConstants.SCREEN_HEIGHT);
+        frame.add(gamePanel);
         frame.pack();
         frame.setVisible(true);
 
@@ -27,6 +28,7 @@ public class FlappyBird {
 
                 //TODO: add better cleanup that stops the timer and everything
                 new Thread(() -> {
+                    gamePanel.stopGameLoop();
                     long s = System.nanoTime();
                     SoundManager.shutdown();
                     long end = System.nanoTime();
