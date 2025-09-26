@@ -236,7 +236,7 @@ public class GamePanel extends JPanel{
         }
     }
 
-    private void calculateFPS()
+    private void calculateDeltaTime()
     {
         long currentTime = System.nanoTime();
         deltaTime = (currentTime - lastTime) / 1e9f;
@@ -424,8 +424,7 @@ public class GamePanel extends JPanel{
     {
         playMenuTheme();
         processInput();
-        calculateFPS();
-        applyParallax();
+        calculateDeltaTime();
         updateGame();
         resetComponentsStates();
     }
