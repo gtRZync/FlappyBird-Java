@@ -27,6 +27,7 @@ public class GamePanel extends JPanel{
     private final Random rand = new Random();
 
     // === Timing & FPS ===
+    private final Timer game;
     private float deltaTime = 0.f;
     private long lastTime = System.nanoTime();
     private float fpsTimer = 0;
@@ -84,7 +85,7 @@ public class GamePanel extends JPanel{
         SpriteManager.getTexture("start"), SpriteManager.getTexture("startpressed") );
         this.add(startBtn.getComponent());
         uiManager.addElement(startBtn);
-        Timer game = new Timer(GameConstants.DELAY, e -> gameLoop());
+        game = new Timer(GameConstants.DELAY, e -> gameLoop());
         game.start();
     }
 
@@ -187,7 +188,7 @@ public class GamePanel extends JPanel{
         }
     }
 
-    private void updateVerticalMotion()
+    private void updatePlayerVerticalMotion()
     {
         if(keyJumped || mouseJumped) {
             bird.velocityY = Bird.JUMP_VELOCITY;
@@ -202,7 +203,7 @@ public class GamePanel extends JPanel{
     private void setShouldSpawn()
     {
         if (!spawningStarted) return;
-        int DISTANCE_X_BETWEEN_PIPES = 210;//*px
+        int DISTANCE_X_BETWEEN_PIPES = 188;//*px
         if(pipes.isEmpty() || pipes.getLast().getCx() < getWidth() - DISTANCE_X_BETWEEN_PIPES )
             shouldSpawn = true;
     }
@@ -251,12 +252,11 @@ public class GamePanel extends JPanel{
         }
     }
 
-    private void startGame()
+    private void handleStartOrRestart()
     {
-        if(gameState.equals(GameState.MENU)) {
-            SoundManager.play("transition");
-            this.gameState = GameState.START;
-        } else if(gameState.equals(GameState.START)) {
+        if(gameState.equals(GameState.PLAYING)) return;
+
+        if(gameState.equals(GameState.START)) {
             this.gameState = GameState.PLAYING;
             lastPipeTimer = System.nanoTime();
         }else if(gameState.equals(GameState.GAME_OVER)) {
@@ -264,6 +264,11 @@ public class GamePanel extends JPanel{
             resetGame();
             this.gameState = GameState.START;
         }
+    }
+
+    private void startGame() {
+        SoundManager.play("transition");
+        this.gameState = GameState.START;
     }
 
     private void startPipeSpawning() {
@@ -335,6 +340,7 @@ public class GamePanel extends JPanel{
 
         if(inputManager.mouse.LEFT_BUTTON.down && !mouseJumped)
         {
+            handleStartOrRestart();
             mouseJumped = true;
             if(gameState == GameState.PLAYING)
                 SoundManager.play("jumped");
@@ -345,8 +351,8 @@ public class GamePanel extends JPanel{
 
 
         if(inputManager.keyBoard.isPressed(Key.SPACE) && !keyJumped) {
+            handleStartOrRestart();
             keyJumped = true;
-            startGame();
             if(gameState == GameState.PLAYING)
                 SoundManager.play("jumped");
         }
@@ -355,19 +361,22 @@ public class GamePanel extends JPanel{
         }
     }
 
-    private void gameLoop()
-    {
-        processInput();
-        calculateFPS();
-        applyParallax();
-        playMenuTheme();
-        bird.updateAnimation(gameState, deltaTime);
+    private void resetJump() {
+        keyJumped = false;
+        mouseJumped = false;
+    }
 
-        if(gameState == GameState.MENU) startBtn.setActive(true);
-        if(gameState == GameState.PLAYING)
-        {
-            startPipeSpawning();
-            updateVerticalMotion();
+    private void resetComponentsStates() {
+        inputManager.resetInputStatesAfter();
+        uiManager.updateStates();
+        resetJump();
+        this.repaint();
+    }
+
+    private void updatePlayer() {
+        bird.updateAnimation(gameState, deltaTime);
+        if(gameState == GameState.PLAYING) {
+            updatePlayerVerticalMotion();
             if(bird.isGrounded)
             {
                 bird.setPosition(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT)));
@@ -378,6 +387,15 @@ public class GamePanel extends JPanel{
                 bird.setPosition(bird.getPosition().x, GameConstants.MAX_HEIGHT);
                 bird.velocityY = Math.max(0.f, bird.velocityY);
             }
+        }
+    }
+
+    private void updateGame() {
+        updatePlayer();
+        applyParallax();
+        if(gameState == GameState.MENU) startBtn.setActive(true);
+        if(gameState == GameState.PLAYING) {
+            startPipeSpawning();
             for (Pipe p : pipes) {
                 p.move(GameConstants.X_SPEED, 0.f);
                 if(bird.isCollidedWith(p.getBounds()) || bird.isGrounded) {
@@ -396,8 +414,19 @@ public class GamePanel extends JPanel{
             }
             setScore();
         }
-        repaint();
-        inputManager.resetInputStatesAfter();
-        uiManager.updateStates();
+    }
+
+    public void stopGameLoop() {
+        game.stop();
+    }
+
+    private void gameLoop()
+    {
+        playMenuTheme();
+        processInput();
+        calculateFPS();
+        applyParallax();
+        updateGame();
+        resetComponentsStates();
     }
 }
