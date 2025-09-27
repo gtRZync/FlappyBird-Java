@@ -26,11 +26,10 @@ public abstract class FadeTransition {
             fadeIn = false;
         }
     }
-
+    //TODO: add isFadingIn method for better UI transition
     public void updateTransition(Graphics2D g2, Vector2<Integer> windowSize, float dt) {
 
         if(startTransition) {
-            //!do one time
             transition = transitionEvent.pop();
             prevColor = g2.getColor();
             startTransition = false;
@@ -42,6 +41,7 @@ public abstract class FadeTransition {
                 case TransitionType.DIP_TO_BLACK -> g2.setColor(new Color(0, 0, 0, (int)alphaValue));
                 case TransitionType.DIP_TO_WHITE -> g2.setColor(new Color(255, 255, 255, (int)alphaValue));
             }
+            g2.fillRect(0, 0, windowSize.x, windowSize.y);
             fadeTimer += speed * dt;
             fadeTimer = Math.min(fadeTimer, 1.f);
             if (fadeIn) {
@@ -54,16 +54,12 @@ public abstract class FadeTransition {
                     fadeTimer = 0;
                 }
             } else {
-                alphaValue = lerp(alphaValue, 225, fadeTimer);
-                if (alphaValue >= 224) {
+                alphaValue = lerp(alphaValue, 245, fadeTimer);
+                if (alphaValue >= 244) {
                     fadeIn = true;
                     fadeTimer = 0;
                 }
             }
-
-            g2.fillRect(0, 0, windowSize.x, windowSize.y);
-            System.out.println("Alpha value : " + alphaValue);
-            System.out.printf("fadeTimer : %.2f%n", fadeTimer);
         }
     }
 

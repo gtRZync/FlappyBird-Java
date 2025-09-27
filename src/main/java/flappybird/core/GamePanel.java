@@ -73,8 +73,8 @@ public class GamePanel extends JPanel{
         uiManager = new ComponentManager();
         transitionManager = new TransitionManager();
 
-        dipToBlack = new DipToBlack(1f);
-        dipToWhite = new DipToWhite(.2f);
+        dipToBlack = new DipToBlack(1.f);
+        dipToWhite = new DipToWhite(.1f);
         transitionManager.push(dipToWhite);
         transitionManager.push(dipToBlack);
 
@@ -332,8 +332,6 @@ public class GamePanel extends JPanel{
         }
         g2.setColor(Color.BLACK);
         g2.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
-        g2.drawString("numbers of pipes : " + pipes.size(), getWidth() - 150, 15);
-        g2.drawString("GameState : " + gameState, getWidth() - 150, 30);
         g2.drawString(String.format("FPS : %d", (int)FPS), 0, 15);
 
         drawFloor(g2);
