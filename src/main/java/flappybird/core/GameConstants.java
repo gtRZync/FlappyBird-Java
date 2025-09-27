@@ -15,7 +15,7 @@ public class GameConstants {
     public static final int FLOOR_SCALE_OFFSET = 110;
     public static final int FLOOR_HEIGHT = VIRTUAL_FLOOR_HEIGHT - FLOOR_SCALE_OFFSET;
     public static final float GRAVITY = .5f;
-    public static final float X_SPEED = -2.f;
+    public static final float FG_X_SPEED = -3.f;
     public static final int SPACE_BETWEEN_PIPES = 180;
     public static final float MAX_HEIGHT = -100.f;
 }

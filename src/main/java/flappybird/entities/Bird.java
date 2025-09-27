@@ -3,6 +3,7 @@ package flappybird.entities;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
 import java.util.Map;
+import java.util.Objects;
 
 import flappybird.core.GameState;
 import flappybird.core.GameConstants;
@@ -17,6 +18,7 @@ public class Bird
     public static final float DEFAULT_X = 100.f;
     public static final float JUMP_VELOCITY = -8;
     public static final float TERMINAL_VELOCITY = 10;
+    public static final float TERMINAL_DOWNWARD_VELOCITY = 14;
     private Vector2<Float> position;
     private final Vector2<Integer> size;
     private final Rect<Float> bounds;
@@ -30,14 +32,15 @@ public class Bird
 
     private float animationTimer = 0.f;
     //? Animation speed in frames per second (modifiable)
-    private static final float ANIMATION_FPS = 10.f;
+    private float ANIMATION_FPS = 10.f;
+    private GameState prevGamestate = GameState.MENU;
     //? Duration each animation frame is shown (derived from FPS)
-    private static final float frameDuration = 1.f / ANIMATION_FPS;
+    private float frameDuration = 1.f / ANIMATION_FPS;
     private int currentFrame = 0;
 
     private static final double MAX_UPWARD_ANGLE = Math.toRadians(-20); // Tilt up when jumping
-    private static final double MAX_DOWNWARD_ANGLE = Math.toRadians(90); // Terminal down tilt
-    private static final double TILT_SPEED = Math.toRadians(450); //? How fast it tilts down per second
+    public static final double MAX_DOWNWARD_ANGLE = Math.toRadians(90); // Terminal down tilt
+    private static final double TILT_SPEED = Math.toRadians(465); //? How fast it tilts down per second
 
     private float headUpTimer = 0.f;
     private boolean startHeadUpTimer;
@@ -103,6 +106,22 @@ public class Bird
         g.dispose();
     }
 
+    public double getAngle() {
+        return this.tiltAngle;
+    }
+
+    private float getFPSForState(GameState state) {
+        if (state == GameState.PLAYING) {
+            return 25.f;
+        }
+        return 10.f;
+    }
+
+    private void setFrameDuration(float ANIMATION_FPS) {
+        this.ANIMATION_FPS = ANIMATION_FPS;
+        frameDuration = 1.f / this.ANIMATION_FPS;
+    }
+
     private void animate( float deltaTime) {
         this.animationTimer += deltaTime;
 
@@ -126,7 +145,7 @@ public class Bird
 
     private boolean shouldKeepHeadUp(float deltaTime) {
         boolean keepHeadUp = false;
-        final float KEEP_HEAD_UP_THRESHOLD = .49f;
+        final float KEEP_HEAD_UP_THRESHOLD = .50f;
         if(startHeadUpTimer) {
             headUpTimer += deltaTime;
             if(headUpTimer <= KEEP_HEAD_UP_THRESHOLD) {
@@ -150,6 +169,11 @@ public class Bird
         }
     }
     public void updateAnimation(GameState gamestate, float deltaTime) {
+        if(prevGamestate != gamestate) {
+            setFrameDuration(getFPSForState(gamestate));
+            prevGamestate = gamestate;
+        }
+
         if(gamestate != GameState.GAME_OVER) {
             animate(deltaTime);
         }

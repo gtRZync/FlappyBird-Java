@@ -179,9 +179,8 @@ public class GamePanel extends JPanel{
 
     private void applyParallax() {
         if(gameState == GameState.GAME_OVER) return;
-        int FG_X_SPEED = -3;
-        floorX += FG_X_SPEED;
-        floorX2 += FG_X_SPEED;
+        floorX += GameConstants.FG_X_SPEED;
+        floorX2 += GameConstants.FG_X_SPEED;
         if(floorX2 <= 0) {
             floorX2 = getWidth();
             floorX = 0;
@@ -196,7 +195,7 @@ public class GamePanel extends JPanel{
         }else {
             bird.velocityY += GameConstants.GRAVITY;
         }
-        bird.velocityY = Math.min(bird.velocityY, Bird.TERMINAL_VELOCITY);
+        bird.velocityY = Math.min(bird.velocityY, (bird.getAngle() > Bird.MAX_DOWNWARD_ANGLE - 2) ? Bird.TERMINAL_DOWNWARD_VELOCITY : Bird.TERMINAL_VELOCITY );
         bird.move(0.f, bird.velocityY);
     }
 
@@ -231,7 +230,7 @@ public class GamePanel extends JPanel{
             int h = height - heights[i];
             heights[i] += h;
             int x = getWidth() + (int) (Pipe.getTextureWidth() * Pipe.scale);
-            int y = (i % 2 == 0) ? -h : (getHeight() + h);//! Add '- GameConstants.FLOOR_HEIGHT'
+            int y = (i % 2 == 0) ? -h : (getHeight() + h - GameConstants.FLOOR_HEIGHT);//! Add '- GameConstants.FLOOR_HEIGHT'
             pipes.add(new Pipe(x , y, heights[i], this));
         }
     }
@@ -397,13 +396,19 @@ public class GamePanel extends JPanel{
         if(gameState == GameState.PLAYING) {
             startPipeSpawning();
             for (Pipe p : pipes) {
-                p.move(GameConstants.X_SPEED, 0.f);
-                if(bird.isCollidedWith(p.getBounds()) || bird.isGrounded) {
+                p.move(GameConstants.FG_X_SPEED, 0.f);
+                if(bird.isCollidedWith(p.getBounds())) {
                     //TODO: add delay, only play died after collided has ended
                     SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
                     SoundManager.play("died");
                 }
+            }
+            if(bird.isGrounded) {
+                //TODO: add delay, only play died after collided has ended
+                SoundManager.play("collided");
+                gameState = GameState.GAME_OVER;
+                SoundManager.play("died");
             }
             pipes.removeIf(p -> p.getCx() < - p.getWidth());
             setShouldSpawn();
