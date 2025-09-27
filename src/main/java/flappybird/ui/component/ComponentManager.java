@@ -1,13 +1,10 @@
-package flappybird.ui;
+package flappybird.ui.component;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import flappybird.ui.component.UIButton;
-import flappybird.ui.component.UIElement;
-
-public class UIManager {
+public class ComponentManager {
     private final List<UIElement> elements = new ArrayList<>();
 
     public void addElement(UIElement element) {
