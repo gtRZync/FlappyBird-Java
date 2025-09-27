@@ -12,9 +12,13 @@ import flappybird.graphics.sprite.SpriteManager;
 import flappybird.graphics.texture.Texture;
 import flappybird.input.Key;
 import flappybird.math.Vector2;
-import flappybird.ui.UIManager;
+import flappybird.ui.component.ComponentManager;
 import flappybird.ui.component.UIButton;
 import flappybird.ui.imagetext.ImageTextRenderer;
+import flappybird.ui.transitions.TransitionManager;
+import flappybird.ui.transitions.fade.DipToBlack;
+import flappybird.ui.transitions.fade.DipToWhite;
+import flappybird.ui.transitions.fade.FadeTransition;
 import flappybird.utils.Utils;
 import flappybird.entities.*;
 import flappybird.input.InputManager;
@@ -40,12 +44,16 @@ public class GamePanel extends JPanel{
     // === Player & Input ===
     private final Bird bird;
     private final InputManager inputManager;
-    private final UIManager uiManager;
-    private final ImageTextRenderer textRenderer;
     private boolean mouseJumped = false;
     private boolean keyJumped = false;
-    private final UIButton startBtn;
 
+    // === UI ===
+    private final ComponentManager uiManager;
+    private final ImageTextRenderer textRenderer;
+    private final UIButton startBtn;
+    private final TransitionManager transitionManager;
+    private final FadeTransition dipToBlack;
+    private final FadeTransition dipToWhite;
 
     // === Game State ===
     private GameState gameState = GameState.MENU;
@@ -62,7 +70,14 @@ public class GamePanel extends JPanel{
         floorX2 = width;
         setFocusable(true);
         inputManager = new InputManager(this);
-        uiManager = new UIManager();
+        uiManager = new ComponentManager();
+        transitionManager = new TransitionManager();
+
+        dipToBlack = new DipToBlack(1f);
+        dipToWhite = new DipToWhite(.2f);
+        transitionManager.push(dipToWhite);
+        transitionManager.push(dipToBlack);
+
         //TODO: maybe add a loadAll(HashMap <String, String> sounds)
         //TODO: add a loading menu and load the assets there, with a representative loading bar
         SoundManager.init();
@@ -259,6 +274,7 @@ public class GamePanel extends JPanel{
             this.gameState = GameState.PLAYING;
             lastPipeTimer = System.nanoTime();
         }else if(gameState.equals(GameState.GAME_OVER)) {
+            dipToBlack.start();
             SoundManager.play("transition");
             resetGame();
             this.gameState = GameState.START;
@@ -266,6 +282,7 @@ public class GamePanel extends JPanel{
     }
 
     private void startGame() {
+        dipToBlack.start();
         SoundManager.play("transition");
         this.gameState = GameState.START;
     }
@@ -320,6 +337,7 @@ public class GamePanel extends JPanel{
         g2.drawString(String.format("FPS : %d", (int)FPS), 0, 15);
 
         drawFloor(g2);
+        transitionManager.update(g2, new Vector2<>(getWidth(), getHeight()), deltaTime);
     }
 
     private void processInput() {
@@ -399,6 +417,7 @@ public class GamePanel extends JPanel{
                 p.move(GameConstants.FG_X_SPEED, 0.f);
                 if(bird.isCollidedWith(p.getBounds())) {
                     //TODO: add delay, only play died after collided has ended
+                    dipToWhite.start();
                     SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
                     SoundManager.play("died");
@@ -406,6 +425,7 @@ public class GamePanel extends JPanel{
             }
             if(bird.isGrounded) {
                 //TODO: add delay, only play died after collided has ended
+                dipToWhite.start();
                 SoundManager.play("collided");
                 gameState = GameState.GAME_OVER;
                 SoundManager.play("died");
