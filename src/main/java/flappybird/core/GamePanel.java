@@ -217,7 +217,7 @@ public class GamePanel extends JPanel{
     private void setShouldSpawn()
     {
         if (!spawningStarted) return;
-        int DISTANCE_X_BETWEEN_PIPES = 188;//*px
+        int DISTANCE_X_BETWEEN_PIPES = 276;//*px
         if(pipes.isEmpty() || pipes.getLast().getCx() < getWidth() - DISTANCE_X_BETWEEN_PIPES )
             shouldSpawn = true;
     }
@@ -244,7 +244,7 @@ public class GamePanel extends JPanel{
         for (int i = 0; i < 2; i++) {
             int h = height - heights[i];
             heights[i] += h;
-            int x = getWidth() + (int) (Pipe.getTextureWidth() * Pipe.scale);
+            int x = getWidth();
             int y = (i % 2 == 0) ? -h : (getHeight() + h - GameConstants.FLOOR_HEIGHT);//! Add '- GameConstants.FLOOR_HEIGHT'
             pipes.add(new Pipe(x , y, heights[i], this));
         }
@@ -289,13 +289,7 @@ public class GamePanel extends JPanel{
 
     private void startPipeSpawning() {
         if(!spawningStarted){
-            long currentTime = System.nanoTime();
-            float spawnTime = (currentTime - lastPipeTimer) / 1e9f;
-            final float START_PIPE_SPAWNING = 1.f;
-
-            if (spawnTime >= START_PIPE_SPAWNING) {
-                spawningStarted = true;
-            }
+            spawningStarted = gameState.equals(GameState.PLAYING);
         }
     }
 
