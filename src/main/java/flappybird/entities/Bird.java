@@ -178,7 +178,7 @@ public class Bird
             animate(deltaTime);
         }
 
-        if(gamestate == GameState.PLAYING) {
+        if(gamestate == GameState.PLAYING || gamestate == GameState.GAME_OVER) {
             tilt(deltaTime);
         }
     }

@@ -204,6 +204,8 @@ public class GamePanel extends JPanel{
 
     private void updatePlayerVerticalMotion()
     {
+        if(gameState.equals(GameState.MENU) || gameState.equals(GameState.START)) return;
+
         if(keyJumped || mouseJumped) {
             bird.velocityY = Bird.JUMP_VELOCITY;
             bird.startHeadUpTimer(true);
@@ -384,8 +386,8 @@ public class GamePanel extends JPanel{
 
     private void updatePlayer() {
         bird.updateAnimation(gameState, deltaTime);
-        if(gameState == GameState.PLAYING) {
-            updatePlayerVerticalMotion();
+        updatePlayerVerticalMotion();
+        if(gameState.equals(GameState.PLAYING) || gameState.equals(GameState.GAME_OVER)){
             if(bird.isGrounded)
             {
                 bird.setPosition(bird.getPosition().x, (float)(getHeight() - (bird.getSize().y + GameConstants.FLOOR_HEIGHT)));
