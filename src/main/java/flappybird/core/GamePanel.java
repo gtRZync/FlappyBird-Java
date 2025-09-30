@@ -19,6 +19,7 @@ import flappybird.ui.transitions.TransitionManager;
 import flappybird.ui.transitions.fade.DipToBlack;
 import flappybird.ui.transitions.fade.DipToWhite;
 import flappybird.ui.transitions.fade.FadeTransition;
+import flappybird.ui.transitions.fade.ImageFade;
 import flappybird.utils.Utils;
 import flappybird.entities.*;
 import flappybird.input.InputManager;
@@ -54,6 +55,7 @@ public class GamePanel extends JPanel{
     private final TransitionManager transitionManager;
     private final FadeTransition dipToBlack;
     private final FadeTransition dipToWhite;
+    private FadeTransition fadeMessage = null;
 
     // === Game State ===
     private GameState gameState = GameState.MENU;
@@ -76,7 +78,6 @@ public class GamePanel extends JPanel{
         dipToBlack = new DipToBlack(1.f);
         dipToWhite = new DipToWhite(.1f);
         transitionManager.push(dipToWhite);
-        transitionManager.push(dipToBlack);
 
         //TODO: maybe add a loadAll(HashMap <String, String> sounds)
         //TODO: add a loading menu and load the assets there, with a representative loading bar
@@ -152,13 +153,20 @@ public class GamePanel extends JPanel{
 
     private void drawPreGame(Graphics2D g2) {
         Texture MESSAGE = SpriteManager.getTexture("message");
-        if(MESSAGE.getImage() != null) {
-            final float scale = 2.f;
-            int width = (int) (MESSAGE.getImage().getWidth() * scale);
-            int height = (int) (MESSAGE.getImage().getHeight() * scale);
-            int x = (getWidth() - width ) / 2;
-            int y = (getHeight() - height) / 2;
-            g2.drawImage(MESSAGE.getImage(),x, y, width, height , this);
+        final float scale = 2.f;
+        int width = (int) (MESSAGE.getImage().getWidth() * scale);
+        int height = (int) (MESSAGE.getImage().getHeight() * scale);
+        int x = (getWidth() - width ) / 2;
+        int y = (getHeight() - height) / 2;
+        if(fadeMessage == null) {
+            fadeMessage = new ImageFade(MESSAGE, x, y, width, height, 5.f);
+            transitionManager.push(fadeMessage);
+            transitionManager.push(dipToBlack);//? that way the black screen is in front of the Image when fading
+        }
+        if(gameState.equals(GameState.START)) {
+            ((ImageFade)fadeMessage).fadeIn();
+        } else if(gameState.equals(GameState.PLAYING)){
+            ((ImageFade)fadeMessage).fadeOut();
         }
     }
 
