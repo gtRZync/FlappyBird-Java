@@ -24,7 +24,9 @@ public class TransitionManager {
 
     public void update(Graphics2D g2, Vector2<Integer> windowSize, float dt) {
         for(FadeTransition t : transitionList) {
-            t.updateTransition(g2, windowSize, dt);
+            if(t != null) {
+                t.updateTransition(g2, windowSize, dt);
+            }
         }
     }
 }
