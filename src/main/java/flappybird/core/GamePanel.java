@@ -159,7 +159,7 @@ public class GamePanel extends JPanel{
         int x = (getWidth() - width ) / 2;
         int y = (getHeight() - height) / 2;
         if(fadeMessage == null) {
-            fadeMessage = new ImageFade(MESSAGE, x, y, width, height, 5.f);
+            fadeMessage = new ImageFade(MESSAGE, x, y, width, height, 3.f, .3f);
             transitionManager.push(fadeMessage);
             transitionManager.push(dipToBlack);//? that way the black screen is in front of the Image when fading
         }

@@ -17,9 +17,9 @@ public abstract class FadeTransition {
     protected float alphaValue = 0;
     protected float transitionDuration = 1.f;
     protected boolean startTransition = false;
-    protected Stack<Integer> transitionEvent = new Stack<>();
-    protected Color prevColor;
     protected boolean transitioning = false;
+    protected Stack<Integer> transitionEvent = new Stack<>(); //? why does each class have it own stack vro 😿
+    protected Color prevColor;
     protected float speed = 1.f;
 
     //!Only used by ImageFade, they're here cuz ion want to add @updateTransition
@@ -38,7 +38,6 @@ public abstract class FadeTransition {
         return fadeIn;
     }
 
-    //TODO: add isFadingIn method for better UI transition
     public void updateTransition(Graphics2D g2, Vector2<Integer> windowSize, float dt) {
 
         if(startTransition) {
@@ -73,7 +72,7 @@ public abstract class FadeTransition {
                 }
             } else {
                 alphaValue = lerp(alphaValue, 0.f, fadeTimer);
-                if (alphaValue <= .1f) {
+                if (alphaValue <= 0.f) {
                     g2.setColor(prevColor);
                     transitioning = false;
                     fadeTimer = 0;
