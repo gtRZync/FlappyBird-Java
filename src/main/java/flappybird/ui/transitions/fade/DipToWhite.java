@@ -11,6 +11,6 @@ public class DipToWhite extends FadeTransition {
     @Override
     public void start() {
         super.start();
-        transitionEvent.push(TransitionType.DIP_TO_WHITE);
+        transitionEvent = TransitionType.DIP_TO_WHITE;
     }
 }

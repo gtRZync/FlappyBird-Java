@@ -13,12 +13,11 @@ import static flappybird.math.Lerp.lerp;
 public abstract class FadeTransition {
     protected boolean fadeIn;
     protected float fadeTimer = 0.f;
-    protected int transition;
+    protected int transitionEvent;
     protected float alphaValue = 0;
     protected float transitionDuration = 1.f;
     protected boolean startTransition = false;
     protected boolean transitioning = false;
-    protected Stack<Integer> transitionEvent = new Stack<>(); //? why does each class have it own stack vro 😿
     protected Color prevColor;
     protected float speed = 1.f;
 
@@ -34,21 +33,16 @@ public abstract class FadeTransition {
         }
     }
 
-    public boolean isFadingIn() {
-        return fadeIn;
-    }
-
     public void updateTransition(Graphics2D g2, Vector2<Integer> windowSize, float dt) {
 
         if(startTransition) {
-            transition = transitionEvent.pop();
             prevColor = g2.getColor();
             startTransition = false;
             transitioning = true;
         }
         if(transitioning) {
 
-            switch (transition) {
+            switch (transitionEvent) {
                 case TransitionType.DIP_TO_BLACK -> {
                     g2.setColor(new Color(0, 0, 0, Math.round(alphaValue * 255)));
                     g2.fillRect(0, 0, windowSize.x, windowSize.y);
@@ -76,7 +70,7 @@ public abstract class FadeTransition {
                     g2.setColor(prevColor);
                     transitioning = false;
                     fadeTimer = 0;
-                    transition = TransitionType.NONE;
+                    transitionEvent = TransitionType.NONE;
                 }
             }
         }

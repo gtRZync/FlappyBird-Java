@@ -11,6 +11,6 @@ public class DipToBlack extends FadeTransition {
     @Override
     public void start() {
         super.start();
-        transitionEvent.push(TransitionType.DIP_TO_BLACK);
+        transitionEvent = TransitionType.DIP_TO_BLACK;
     }
 }

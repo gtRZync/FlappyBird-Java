@@ -51,7 +51,7 @@ public class ImageFade extends FadeTransition{
 
     private void fade(boolean in) {
         super.start();
-        transitionEvent.push(TransitionType.IMAGE_FADE);
+        transitionEvent = TransitionType.IMAGE_FADE;
         fadeIn = in;
     }
 
