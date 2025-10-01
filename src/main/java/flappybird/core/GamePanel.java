@@ -28,13 +28,12 @@ public class GamePanel extends JPanel{
     // === Pipes & Spawning ===
     private final ArrayList<Pipe> pipes;
     private boolean shouldSpawn = false;
-    private long lastPipeTimer;
     private final Random rand = new Random();
 
     // === Timing & FPS ===
     private final Timer game;
     private float deltaTime = 0.f;
-    private long lastTime = System.nanoTime();
+    private long lastTime;
     private float fpsTimer = 0;
     private int fpsCounter = 0;
     private static float FPS = 0.f;
@@ -103,6 +102,7 @@ public class GamePanel extends JPanel{
         uiManager.addElement(startBtn);
         game = new Timer(GameConstants.DELAY, e -> gameLoop());
         game.start();
+        lastTime = System.nanoTime();
     }
 
     private void playMenuTheme() {
@@ -147,7 +147,7 @@ public class GamePanel extends JPanel{
             birdPosY += offsetY;
 
             g2.drawImage(SpriteManager.getTexture("flappybird").getImage(), titlePosX, titlePosY, titleWidth, titleHeight, this);
-            g2.drawImage(bird.getTexture().getImage(), birdPosX, birdPosY, birdX, birdY, this);
+            g2.drawImage(bird.getTexture().getImage(), birdPosX, birdPosY, birdX, birdY, null);
         }
     }
 
@@ -282,7 +282,6 @@ public class GamePanel extends JPanel{
 
         if(gameState.equals(GameState.START)) {
             this.gameState = GameState.PLAYING;
-            lastPipeTimer = System.nanoTime();
         }else if(gameState.equals(GameState.GAME_OVER)) {
             dipToBlack.start();
             SoundManager.play("transition");
@@ -319,7 +318,6 @@ public class GamePanel extends JPanel{
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         drawBackground(g2);
-        //TODO: correct the superfast flap bug on the menu screen (due to delta time accumulation when screen is still invisible i think)
         drawMenus(g2);
         if(gameState != GameState.MENU)
         {

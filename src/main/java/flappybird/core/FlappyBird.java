@@ -26,7 +26,6 @@ public class FlappyBird {
             public void windowClosing(WindowEvent e) {
                 frame.setVisible(false);
 
-                //TODO: add better cleanup that stops the timer and everything
                 new Thread(() -> {
                     gamePanel.stopGameLoop();
                     long s = System.nanoTime();
