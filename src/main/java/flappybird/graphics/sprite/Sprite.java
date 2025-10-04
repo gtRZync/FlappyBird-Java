@@ -3,7 +3,6 @@ package flappybird.graphics.sprite;
 import flappybird.graphics.texture.Texture;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
 public class Sprite {
     private int x;
