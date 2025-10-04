@@ -161,6 +161,22 @@ public class SoundManager {
         }
     }
 
+    public static boolean isDone(String id) {
+        List<Clip> pool = soundsPools.get(id);
+
+        if(pool == null) {
+            System.out.printf("[ERROR] - Sound %s was not loaded.", id);
+            return false;
+        }
+
+        for(Clip clip : pool) {
+            if(clip.isRunning()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static void shutdown() {
         for(List<Clip> pool : soundsPools.values()) {
             for(Clip clip : pool) {

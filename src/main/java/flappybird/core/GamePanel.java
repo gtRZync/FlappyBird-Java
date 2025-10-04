@@ -3,7 +3,12 @@ package flappybird.core;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -61,6 +66,7 @@ public class GamePanel extends JPanel{
     private int score = 0;
     private boolean debug = false;
     private boolean spawningStarted = false;
+    private boolean deadPlayed = false;
 
 
     GamePanel(int width, int height) {
@@ -307,6 +313,7 @@ public class GamePanel extends JPanel{
         pipes.clear();
         this.score = 0;
         spawningStarted = false;
+        deadPlayed = false;
     }
 
     @Override
@@ -420,7 +427,6 @@ public class GamePanel extends JPanel{
                     dipToWhite.start();
                     SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
-                    SoundManager.play("died");
                 }
             }
             if(bird.isGrounded) {
@@ -428,7 +434,6 @@ public class GamePanel extends JPanel{
                 dipToWhite.start();
                 SoundManager.play("collided");
                 gameState = GameState.GAME_OVER;
-                SoundManager.play("died");
             }
             pipes.removeIf(p -> p.getCx() < - p.getWidth());
             setShouldSpawn();
@@ -438,6 +443,12 @@ public class GamePanel extends JPanel{
                 shouldSpawn = false;
             }
             setScore();
+        }
+        if(gameState.equals(GameState.GAME_OVER)) {
+            if(SoundManager.isDone("collided") && !deadPlayed) {
+                SoundManager.play("died");
+                deadPlayed = true;
+            }
         }
     }
 
