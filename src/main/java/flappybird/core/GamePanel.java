@@ -423,14 +423,12 @@ public class GamePanel extends JPanel{
             for (Pipe p : pipes) {
                 p.move(GameConstants.FG_X_SPEED, 0.f);
                 if(bird.isCollidedWith(p.getBounds())) {
-                    //TODO: add delay, only play died after collided has ended
                     dipToWhite.start();
                     SoundManager.play("collided");
                     gameState = GameState.GAME_OVER;
                 }
             }
             if(bird.isGrounded) {
-                //TODO: add delay, only play died after collided has ended
                 dipToWhite.start();
                 SoundManager.play("collided");
                 gameState = GameState.GAME_OVER;
