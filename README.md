@@ -58,7 +58,7 @@ This project demonstrates basic game programming concepts such as animation, col
    mvn exec:java -Dexec.mainClass="flappybird.core.FlappyBird"
    ```
 
-> **Note:**
+> [!NOTE]
 > If you are using a Java version **between 14 and 21**, make sure to update your Maven compiler plugin to specify the correct source and target versions in your `pom.xml`. For example:
 >
 > ```xml
